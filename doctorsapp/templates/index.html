@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="../static/index.js"></script>
+</head>
+<body class="index-body-color">
+
+
+{% include "bootstrap.html" %}
+
+<div class="container-fluid  index-centering">
+    <div class="row ">
+        <div class="col">
+            <h1>Doctor's AI Companion</h1>
+        </div>
+    </div>
+</div>
+<div class="container-fluid container-margin">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class=" col-md-4 index-image">
+        </div>
+        <div class="col-md-2"></div>
+
+        <div class="col-md-4 index-container">
+            <form method="POST" class="index-form">
+                {{ form.csrf_token }}
+                <div class="row form-group ">
+                    {{ form.email(placeholder="Email",class="form-control index-input1") }}
+                </div>
+                <div class="row form-group">
+                    <div class="position-relative">
+                        {{ form.password(placeholder="Password",class="form-control password-input index-input1") }}
+                        <button style="background-color: inherit" type="button"
+                                class=" index-toggle-button" onclick="togglePasswordVisibility()">
+                            <i class="fas fa-eye" id="toggle-password"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    {{ form.sign_in(class="form-control",style="background-color: #f1fbf8;width:100px;border-color:
+                    green") }}
+                </div>
+            </form>
+            <div class="row form-group">
+                <a class="btn"
+                   style="background-color: #f1fbf8;border-color: black;margin-top: 40px;border-width: medium"
+                   href="{{ url_for('main.change_password') }}">Forget Password</a>
+            </div>
+
+            <div class="index-top-color">
+                {% with messages = get_flashed_messages() %}
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endwith %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

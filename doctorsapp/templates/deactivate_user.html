@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+{% include "bootstrap.html" %}
+<div class="container-fluid index-form index-input1 container-margin ">
+    <div class="row">
+        <div class="col">
+            <h3>Activate / Deactivate User</h3>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid index-form">
+    <div class="row">
+        <div class="col">
+            <form method="POST">
+                <div class="form-group add-doctors-margin">
+                    <input type="email" class="form-control" name="email" autocomplete="off"
+                           placeholder="User Email ..."
+                           required>
+                </div>
+                <div class="form-group">
+                    <select class="form-control add-doctors-margin" name="status" required>
+                        <option value="" disabled selected>Change Status ...</option>
+                        <option value="active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-light">Save</button>
+
+                </div>
+
+                <div class="container-margin">
+                    <a class="deactivate_user_but" href="{{url_for('main.add_doctors')}}">Add New Doctor</a>
+                    <a class="deactivate_user_but" href="{{url_for('main.add_assistant')}}">Add New Assistant</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container index-form">
+    <div class="row">
+        <div class="col">
+            {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+            <div class="alert alert-warning">{{message}}</div>
+            {% endfor %}
+            {% endwith %}
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

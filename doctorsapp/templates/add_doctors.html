@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+{% include "bootstrap.html" %}
+
+<div class="container" style="text-align: center; margin-bottom: 20px; margin-top: 10px">
+    <h3>Enter Doctor's Data</h3>
+
+    {% with messages=get_flashed_messages() %}
+    <div class="container" style="text-align: center">
+        {% for message in messages %}
+        <div class="alert alert-warning">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endwith %}
+</div>
+<div class="container-fluid index-container">
+    <div class="row">
+        <div class="col">
+            <form method="POST">
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" placeholder="Name" name="name" autocomplete="off" required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" placeholder="Family" name="family" autocomplete="off"
+                           required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" placeholder="Father" name="father" autocomplete="off"
+                           required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" placeholder="phone" name="phone" autocomplete="off"
+                           required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="email" placeholder="Email" name="email" autocomplete="off"
+                           required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" placeholder="Password" name="password" autocomplete="off"
+                           required>
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <input class="form-control " type="text" value="doctor" name="type" readonly
+                           required>
+
+                </div>
+                <div class="form-group add-doctors-margin">
+                    <select class="form-control " name="specialty" required>
+                        <option value="" disabled selected>Select Specialty ...</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="endocrinology">Endocrinology</option>
+                        <option value="general_surgery">General Surgery</option>
+                        <option value="dentistry">Dentistry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control add-doctors-margin" name="status" required>
+                        <option value="" disabled selected>Select Status ...</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class=" btn btn-primary" id="save-button">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+{% include "bootstrap.html" %}
+
+<div class="container-fluid index-form container-margin ">
+  <div class="row">
+    <div class="col">
+      <h3>Admin Dashboard</h3>
+    </div>
+  </div>
+  <div class="row">
+    <a class="deactivate_user_but index-input1 text-center" href="{{url_for('main.add_doctors')}}">Add Doctor</a>
+    <a class="deactivate_user_but index-input1 text-center" href="{{url_for('main.add_assistant')}}">Add Assistant</a>
+    <a class="deactivate_user_but text-center" href="{{url_for('main.deactivate_user')}}">Deactivate User</a>
+  </div>
+</div>
+
+</body>
+</html>
