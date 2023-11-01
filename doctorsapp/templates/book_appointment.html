@@ -8,12 +8,47 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
-    <script src="../static/book_appointment.js"></script>
+
+
+    <script type="module" src="../static/book_appointment.js"></script>
 </head>
 
 <body>
 {% include "bootstrap.html" %}
-<div id="calendar"></div>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+    {#    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>#}
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+
+
+    <script type="module" src="../static/book_appointment.js"></script>
+</head>
+
+<body>
+{% include "bootstrap.html" %}
+
+<div id='external-events'>
+    <p>
+        <strong>Reschedule with AI</strong>
+    </p>
+
+    <p>
+        <input type='checkbox' id='drop-remove'/>
+        <label for='drop-remove'>remove after drop</label>
+    </p>
+</div>
+
+<div id='calendar-container'>
+    <div id='calendar'></div>
+</div>
 
 
 <div id="appointmentModal" class="modal" tabindex="-1">
@@ -172,8 +207,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="modal-title">Resize Appointment</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <p class="modal-title">Reschedule Appointment</p>
+                <button id="close-sign" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <ul class="list-group" id="search-results"></ul>
@@ -205,7 +240,7 @@
                             <label class="book-appointment-font">Start Time</label>
                             <input class="form-control" type="time" name="start-time" required>
                         </div>
-                        <input type="hidden" name="hidden-start">
+
                         <input type="hidden" name="event_id">
 
 
@@ -213,7 +248,7 @@
                             <label class="book-appointment-font">End Time</label>
                             <input class="form-control" type="time" name="end-time" required>
                         </div>
-                        <input type="hidden" name="hidden-end">
+
 
                         <div class="col-md-3 form-group">
                             <label class="book-appointment-font">Appointment Type</label>
@@ -295,7 +330,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="close-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button name="submit-button" type="submit" class="btn btn-primary">Save changes</button>
                 </div>
             </form>
@@ -303,141 +338,46 @@
     </div>
 </div>
 
-{# Drag & Drop Modal#}
 
-<div id="dropModal" class="modal" tabindex="-1">
+{#click event #}
+<div id="clickModal" class="modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="modal-title">Drag & Drop Appointment</p>
+                <p class="modal-title">Appointment Pathways</p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
-                <ul class="list-group" id="search-results"></ul>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4 ">
+                            <a href="{{ url_for('main.emr') }}">
+                                <img class="book-appointment-icon" src="../static/report.png" alt="EMR Icon"
+                                     style="margin-right: 10px">
+                                <span class="align-middle">Go to EMR</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <img id="rescheduling-img" class="book-appointment-icon" src="../static/calendar.png"
+                                 alt="Calendar Icon" style="margin-right: 10px">
+                            <span id="rescheduling" class="align-middle">Reschedule</span>
+                        </div>
+                        <div class="col-md-4">
+                            <img id="delete-img" class="book-appointment-icon" src="../static/delete.png"
+                                 alt="Calendar Icon" style="margin-right: 10px">
+                            <span id="deleting" class="align-middle">Delete Event</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form id="drop-form">
-                <div class="modal-body">
 
-                    <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">First Name</label>
-                            <input class="form-control" readonly type="text" name="first-name">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Family Name</label>
-                            <input class="form-control" readonly type="text" name="family-name">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Phone Number</label>
-                            <input class="form-control" readonly type="text" name="phone">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Date</label>
-                            <input class="form-control" type="date" name="date" required>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Start Time</label>
-                            <input class="form-control" type="time" name="start-time" required>
-                        </div>
-                        <input type="hidden" name="hidden-start">
-                        <input type="hidden" name="event_id">
-
-
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">End Time</label>
-                            <input class="form-control" type="time" name="end-time" required>
-                        </div>
-                        <input type="hidden" name="hidden-end">
-
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Appointment Type</label>
-                            <select name="select-appointment-drop" class="form-control" required>
-                                <option value="" selected readonly>Select appointment...</option>
-                                <option value="consultation">Consultation</option>
-                                <option value="follow_up">Follow up</option>
-                                <option value="procedure">Procedure</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font"> Treating Physician</label>
-                            <select name="select-physician" class="form-control" required>
-                                <option value="" selected readonly>Select physician ...</option>
-                                <option value="johny.achkar01@gmail.com">Dr Bassem Safadi</option>
-                                <option value="johny.achkar03@gmail.com">Dr Hussain Ismaeel</option>
-                            </select>
-                        </div>
-
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-md-3" name="procedure-group-drop" style="display: none">
-                            <label class="book-appointment-font">Procedure Type</label>
-                            <select class="form-control" name="select-procedure-drop">
-                                <option value="" selected readonly>Select procedure...</option>
-                                <option value="endoscopy">Endoscopy</option>
-                                <option value="tooth_extraction">Tooth extraction</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Chief Complaint</label>
-                            <select name="select-chief" multiple class=" form-control">
-                                <option value="stomach pain">Stomach pain</option>
-                                <option value="chest pain">Chest pain</option>
-                                <option value="tooth pain">Tooth pain</option>
-                            </select>
-                        </div>
-                        <div class="col-md-9 form-group">
-                            <label class="book-appointment-font" style="display: flex;justify-content: center">Reminders
-                                & Instructions</label>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div>
-                                        <input type="checkbox" name="booking_reminder">
-                                        <label for="booking_reminder">Booking</label>
-                                    </div>
-                                    <input hidden name="fathers">
-                                    <div>
-                                        <input type="checkbox" name="appointment_reminder">
-                                        <label for="appointment_reminder">Appointment </label>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-3">
-                                    <div>
-                                        <input type="checkbox" name="weather_reminder">
-                                        <label for="weather_reminder">Weather</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" name="traffic_reminder">
-                                        <label for="traffic_reminder">Traffic</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div style="display: none" id="prior-reminder-drop">
-                                        <input type="checkbox" name="prior_procedure_reminder">
-                                        <label id="prior-reminder-label-drop" for="prior_procedure_reminder"></label>
-                                    </div>
-                                    <div style="display: none" id="post-reminder-drop">
-                                        <input type="checkbox" name="post_procedure_reminder">
-                                        <label id="post-reminder-label-drop" for="post_procedure_reminder"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button name="submit-button" type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
+
 </body>
 </html>

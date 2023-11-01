@@ -1,3 +1,4 @@
+
 .container-margin {
     margin-top: 70px;
 }
@@ -43,9 +44,9 @@
     flex-direction: column;
 }
 
-.index-top-color{
+.index-top-color {
     margin-top: 25px;
-    color:red;
+    color: red;
 }
 
 /*green*/
@@ -68,9 +69,9 @@
 }
 
 .index-toggle-button {
-    position:absolute;
-    top:10%;
-    right:15px;
+    position: absolute;
+    top: 10%;
+    right: 15px;
     background-color: transparent;
     border: none;
 
@@ -95,38 +96,37 @@
     height: 100vh;
 }
 
-.add-token-toggle{
-    position:absolute;
-    top:10%;
-    right:10px;
+.add-token-toggle {
+    position: absolute;
+    top: 10%;
+    right: 10px;
     background-color: transparent;
     border: none;
 }
 
-.add-token-image{
+.add-token-image {
     background: url('/static/token1.jpg');
     background-repeat: no-repeat;
-     background-size: 50% 100vh;
+    background-size: 50% 100vh;
 }
 
-.change-password-final-img{
+.change-password-final-img {
     background: url('/static/reset_password.jpg');
     background-size: 50% 100vh;
     background-repeat: no-repeat;
 }
 
-.change-password-final-color{
-    background-color:#fff8fb;
+.change-password-final-color {
+    background-color: #fff8fb;
 }
 
-.change-password-toggle{
-    position:absolute;
-    top:12%;
-    right:15px;
-    border:none;
+.change-password-toggle {
+    position: absolute;
+    top: 12%;
+    right: 15px;
+    border: none;
     background-color: transparent;
 }
-
 
 
 .features-back-image {
@@ -136,13 +136,112 @@
     background-position: center top; /* Position the background at the top */
 }
 
-.register-patient-img{
+.register-patient-img {
     width: 100%;
-    height:80vh;
+    height: 80vh;
     border-radius: 5%;
     object-fit: cover;
 }
 
-.book-appointment-font{
+.book-appointment-font {
     font-weight: bold;
 }
+
+.book-appointment-icon {
+    width: 30px;
+    height: 30px;
+}
+
+#rescheduling:hover,
+#delete-img:hover,
+#deleting:hover,
+#rescheduling-img:hover {
+    cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+
+/* CSS to control the size of the calendar container */
+.modal-calendar-container {
+    width: 100%;
+    height: 100%;
+}
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+#external-events {
+    position: fixed;
+    z-index: 2;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background: #eee;
+}
+
+#external-events .fc-event {
+    cursor: move;
+    margin: 3px 0;
+}
+
+#calendar-container {
+    position: relative;
+    z-index: 1;
+    margin-left: 200px;
+}
+
+#calendar {
+    max-width: 1100px;
+    margin: 20px auto;
+}
+
+/* Custom CSS to increase the width of the event content */
+.event-content {
+    width: 200px; /* Adjust this width as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+#external-events {
+    position: fixed;
+    z-index: 2;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background: #eee;
+}
+
+#external-events .fc-event {
+    cursor: move;
+    margin: 3px 0;
+}
+
+#calendar-container {
+    position: relative;
+    z-index: 1;
+    margin-left: 200px;
+}
+
+#calendar {
+    max-width: 1100px;
+    margin: 20px auto;
+}
+
+
+

@@ -133,10 +133,12 @@ def book_appointment():
         father = request.form.get('fathers')
         phone = request.form.get('phone')
         date = request.form.get('date')
+        print("the original date",date)
         start_time = request.form.get('start-time')
+        print("the start time is",start_time)
 
         hidden_start_time = request.form.get('hidden-start')
-
+        print("the hidden start original",hidden_start_time)
         hidden_end_time = request.form.get('hidden-end')
 
         end_time = request.form.get('end-time')
@@ -181,7 +183,8 @@ def book_appointment():
             'patient_name': name,
             'family_name': family,
             'encounter_id': encounter_id,
-            'phone': phone
+            'phone': phone,
+            'appointment':appointment_type,
 
         }
         print("the response is", response)
@@ -200,15 +203,15 @@ def resize_appointment():
         start_time = request.form.get('start-time')
         phone=request.form.get('phone')
         end_time = request.form.get('end-time')
-        hidden_start_time = request.form.get('hidden-start')
-        hidden_end_time = request.form.get('hidden-end')
+        constructed_start_time=date+"T"+start_time+":00+03:00"
+        constructed_end_time=date+"T"+end_time+":00+03:00"
+
         booking_confirmation = request.form.get('booking_reminder')
         appointment_confirmation = request.form.get('appointment_reminder')
         weather = request.form.get('weather_reminder')
         traffic = request.form.get('traffic_reminder')
         prior_proc_reminder = request.form.get('prior_procedure_reminder')
         post_proc_reminder = request.form.get('post_procedure_reminder')
-
         event_encounter = bookingEncounter.query.filter_by(id=eventID).first()
         if event_encounter:
             event_encounter.date = date,
@@ -222,9 +225,10 @@ def resize_appointment():
             event_encounter.postProcedureInstructions = post_proc_reminder
 
             db.session.commit()
+
             response = {
-                'start_time': hidden_start_time,
-                'end_time': hidden_end_time,
+                'start_time': constructed_start_time,
+                'end_time': constructed_end_time,
                 'patient_name': name,
                 'family_name': family,
                 'encounter_id': eventID,
@@ -239,55 +243,10 @@ def resize_appointment():
     return render_template("book_appointment.html")
 
 
-@main.route('/drop_appointment', methods=['GET', 'POST'])
-def drop_appointment():
-    if request.method == 'POST':
-        date = request.form.get('date')
-        name = request.form.get('first-name')
-        family = request.form.get('family-name')
-        eventID = request.form.get('event_id')
-        start_time = request.form.get('start-time')
-        phone=request.form.get('phone')
-        end_time = request.form.get('end-time')
-        hidden_start_time = request.form.get('hidden-start')
-        hidden_end_time = request.form.get('hidden-end')
-        booking_confirmation = request.form.get('booking_reminder')
-        appointment_confirmation = request.form.get('appointment_reminder')
-        weather = request.form.get('weather_reminder')
-        traffic = request.form.get('traffic_reminder')
-        prior_proc_reminder = request.form.get('prior_procedure_reminder')
-        post_proc_reminder = request.form.get('post_procedure_reminder')
+@main.route('/emr',methods=['GET','POST'])
+def emr():
 
-        event_encounter = bookingEncounter.query.filter_by(id=eventID).first()
-        if event_encounter:
-            event_encounter.date = date,
-            event_encounter.start_time = start_time,
-            event_encounter.end_time = end_time,
-            event_encounter.bookingConfirmation = booking_confirmation,
-            event_encounter.appointmentReminder = appointment_confirmation,
-            event_encounter.weatherReminder = weather,
-            event_encounter.trafficReminder = traffic,
-            event_encounter.priorProcedureInstructions = prior_proc_reminder,
-            event_encounter.postProcedureInstructions = post_proc_reminder
-
-            db.session.commit()
-            response = {
-                'start_time': hidden_start_time,
-                'end_time': hidden_end_time,
-                'patient_name': name,
-                'family_name': family,
-                'encounter_id': eventID,
-                'phone':phone
-            }
-            print("this is the drop response", response)
-            return jsonify(response)
-        else:
-            flash("Event encounter not found")
-            return render_template("book_appointment.html")
-
-    return render_template("book_appointment.html")
-
-
+    return render_template("emr.html")
 @main.route('/search_patient', methods=['GET', 'POST'])
 def search_patient():
     query = request.args.get('query', '').lower()

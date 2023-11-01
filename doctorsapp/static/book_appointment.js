@@ -1,15 +1,19 @@
-//render the calendar
 document.addEventListener('DOMContentLoaded', function () {
+    var Calendar = FullCalendar.Calendar;
+    var Draggable = FullCalendar.Draggable;
     var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+
+
+    var calendar = new Calendar(calendarEl, {
         timeZone: 'local',
         initialView: 'timeGridWeek',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'timeGridWeek,dayGridMonth,timeGridDay,listWeek',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         expandRows: true,
+        contentHeight: 1000,
         weekends: true,
         hiddenDays: [0],
         slotMinTime: "07:00:00",
@@ -17,7 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
         navLinks: true,
         selectable: true,
         editable: true,
+        droppable: true,
+        drop: function (info) {
+            const encounterId = info.draggedEl.dataset.encounterId;
+            // is the "remove after drop" checkbox checked?
+            if (checkbox.checked) {
+                // if so, remove the element from the "Draggable Events" list
+                info.draggedEl.parentNode.removeChild(info.draggedEl);
 
+            }
+        },
         select: function (info) {
 
             const calendarDate = info.start;
@@ -43,124 +56,236 @@ document.addEventListener('DOMContentLoaded', function () {
             $("#appointmentModal").modal('show');
         },
 
-        eventContent: function (arg) {
-            let eventContent = document.createElement('div');
-            let timeText = arg.timeText;
-            let patientName = arg.event.extendedProps.patientName;
-            let familyName = arg.event.extendedProps.familyName;
-
-            eventContent.innerHTML = `${timeText}: ${patientName}  ${familyName}`;
-            return {domNodes: [eventContent]}
-
-        },
-
         eventResize: function (info) {
 
             $("#resizeModal").modal('show')
+            editAppointment(info)
+
+        },
+        eventDrop: function (info) {
+            $("#resizeModal").modal('show');
+            editAppointment(info)
+
+        },
+        eventClick: function (info) {
             var event_id = info.event.id;
-            console.log("the event id is ", event_id)
-            var startEvent = info.event.start;
-            var endEvent = info.event.end;
-            var startStr = info.event.startStr;
-            var endStr = info.event.endStr;
+            console.log("the evento ido ", event_id)
+            var get_event_id = calendar.getEventById(event_id);
+            $('#clickModal').modal('show');
+            const rescheduleText = document.getElementById("rescheduling");
+            const rescheduleImage = document.getElementById("rescheduling-img");
+            const deleteText = document.getElementById("deleting");
+            const deleteImage = document.getElementById("delete-img");
+            const draggableEvent = document.querySelector('.fc-event');
 
-            var date = startEvent.toISOString().slice(0, 10);
 
-            var startHours = startEvent.getHours().toString().padStart(2, '0');
-            var startMinutes = startEvent.getMinutes().toString().padStart(2, '0');
-            var startFinal = startHours + ":" + startMinutes;
+            rescheduleText.addEventListener("click", function () {
+                $("#clickModal").modal('hide');
+                $("#resizeModal").modal('show');
+                clickEvent(info)
 
-            var endHours = endEvent.getHours().toString().padStart(2, '0');
-            var endMinutes = endEvent.getMinutes().toString().padStart(2, '0');
-            var endFinal = endHours + ":" + endMinutes;
 
-            var patientName = info.event.extendedProps.patientName;
-            var familyName = info.event.extendedProps.familyName;
-            var phone = info.event.extendedProps.phone
+            });
+            rescheduleImage.addEventListener("click", function () {
+                $("#clickModal").modal('hide');
+                $("#resizeModal").modal('show');
+                clickEvent(info)
+            });
 
-            $('[name="start-time"]').val(startFinal);
-            $('[name="end-time"]').val(endFinal);
-            $('[name="date"]').val(date);
-            $('[name="hidden-start"]').val(startStr);
-            $('[name="hidden-end"]').val(endStr);
-            $('[name="event_id"]').val(event_id);
-            $('[name="first-name"]').val(patientName);
-            $('[name="family-name"]').val(familyName);
-            $('[name="phone"]').val(phone)
+            deleteText.addEventListener("click", function () {
+                $("#clickModal").modal('hide');
+
+                if (get_event_id) {
+                    get_event_id.remove();
+                }
+
+                const draggableEvent = document.querySelector('.fc-event[data-encounter-id="' + event_id + '"]')
+                if (draggableEvent) {
+                    draggableEvent.remove();
+                }
+
+
+            });
+
+            deleteImage.addEventListener("click", function () {
+                $("#clickModal").modal('hide');
+                if (get_event_id) {
+                    get_event_id.remove();
+                }
+
+                const draggableEvent = document.querySelector('.fc-event[data-encounter-id="' + event_id + '"]')
+                if (draggableEvent) {
+                    draggableEvent.remove();
+                }
+
+
+            });
+
 
         },
 
-        eventDrop: function (info) {
-            $("#dropModal").modal('show');
-
-            var event_id = info.event.id;
-            var startEvent = info.event.start;
-            var endEvent = info.event.end;
-            var startStr = info.event.startStr;
-            var endStr = info.event.endStr;
-
-            var date = startEvent.toISOString().slice(0, 10);
-
-            var startHours = startEvent.getHours().toString().padStart(2, '0');
-            var startMinutes = startEvent.getMinutes().toString().padStart(2, '0');
-            var startFinal = startHours + ":" + startMinutes;
-
-            var endHours = endEvent.getHours().toString().padStart(2, '0');
-            var endMinutes = endEvent.getMinutes().toString().padStart(2, '0');
-            var endFinal = endHours + ":" + endMinutes;
-
-            var patientName = info.event.extendedProps.patientName;
-            var familyName = info.event.extendedProps.familyName;
-            var phone = info.event.extendedProps.phone;
-            console.log("this is the phone number")
-
-
-            $('[name="start-time"]').val(startFinal);
-            $('[name="end-time"]').val(endFinal);
-            $('[name="date"]').val(date);
-            $('[name="hidden-start"]').val(startStr);
-            $('[name="hidden-end"]').val(endStr);
-            $('[name="event_id"]').val(event_id);
-            $('[name="first-name"]').val(patientName);
-            $('[name="family-name"]').val(familyName);
-            $('[name="phone"]').val(phone)
-
-            /*
-            $("#appointmentModal").modal('show');
-            var event_id = info.event.id;
-            var resize = "1";
-            var startEvent = info.event.start;
-            var endEvent = info.event.end;
-            var startStr = info.event.startStr;
-            var endStr = info.event.endStr;
-
-            var date = startEvent.toISOString().slice(0, 10);
-
-            var startHours = startEvent.getHours().toString().padStart(2, '0');
-            var startMinutes = startEvent.getMinutes().toString().padStart(2, '0');
-            var startFinal = startHours + ":" + startMinutes;
-
-            var endHours = endEvent.getHours().toString().padStart(2, '0');
-            var endMinutes = endEvent.getMinutes().toString().padStart(2, '0');
-            var endFinal = endHours + ":" + endMinutes;
-
-
-            $('[name="start-time"]').val(startFinal);
-            $('[name="end-time"]').val(endFinal);
-            $('[name="date"]').val(date);
-            $('[name="hidden-start"]').val(startStr);
-            $('[name="hidden-end"]').val(endStr);
-            $('[name="resize"]').val(resize);
-            $('[name="event_id"]').val(event_id);
-
-            */
-        }
-
-
     });
+
     calendar.render();
 
-//search for patient names
+    //FUNCTIONS
+    // 1- Edit Calendar Event Function
+    function editAppointment(info) {
+        var event_id = info.event.id;
+
+        var startEvent = info.event.start;
+        var endEvent = info.event.end;
+
+        var date = startEvent.toISOString().slice(0, 10);
+
+        var startHours = startEvent.getHours().toString().padStart(2, '0');
+        var startMinutes = startEvent.getMinutes().toString().padStart(2, '0');
+        var startFinal = startHours + ":" + startMinutes;
+
+        var endHours = endEvent.getHours().toString().padStart(2, '0');
+        var endMinutes = endEvent.getMinutes().toString().padStart(2, '0');
+        var endFinal = endHours + ":" + endMinutes;
+
+        var patientName = info.event.extendedProps.patientName;
+        var familyName = info.event.extendedProps.familyName;
+        var phone = info.event.extendedProps.phone
+
+
+        //get close button and X to revert back if event was closed or X
+        var closeSign = document.getElementById("close-sign");
+        var closeButton = document.getElementById("close-button");
+
+
+        $('[name="start-time"]').val(startFinal);
+        $('[name="end-time"]').val(endFinal);
+        $('[name="date"]').val(date);
+        $('[name="event_id"]').val(event_id);
+        $('[name="first-name"]').val(patientName);
+        $('[name="family-name"]').val(familyName);
+        $('[name="phone"]').val(phone);
+
+        closeSign.addEventListener("click",function(event){
+            $("#resizeModal").modal('hide');
+            info.revert()
+        });
+        closeButton.addEventListener("click",function(){
+            $("#resizeModal").modal('hide');
+            info.revert()
+        })
+
+
+    }
+
+    //2-Click Calendar Event Function
+    function clickEvent(info) {
+        var event_id = info.event.id
+        var name = info.event.extendedProps.patientName;
+        var family = info.event.extendedProps.familyName;
+        var phone = info.event.extendedProps.phone;
+
+        $('[name="first-name"]').val(name);
+        $('[name="family-name"]').val(family);
+        $('[name="phone"]').val(phone);
+        $('[name="event_id"]').val(event_id);
+
+    }
+
+    //SUBMIT FORMS
+    //1-submit the booking form and add the external events
+    const bookingForm = document.getElementById("booking-form");
+    const checkbox = document.getElementById('drop-remove');
+    const externalEvents = document.getElementById("external-events");
+
+    bookingForm.onsubmit = function (event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '/book_appointment',
+            data: $("#booking-form").serialize(),
+            dataType: 'json',
+            success: function (response) {
+                var eventData = {
+                    id: response.encounter_id,
+                    title: response.patient_name + ' ' + response.family_name + ':' + '  ' + response.appointment,
+                    start: response.start_time,
+                    end: response.end_time,
+                    extendedProps: {
+                        patientName: response.patient_name,
+                        familyName: response.family_name,
+                        phone: response.phone,
+                        appointment: response.appointment
+                    }
+                };
+
+                // Create a new fcEventElement for each event
+                const fcEventElement = document.createElement("div");
+                fcEventElement.classList.add("fc-event", "fc-h-event", "fc-daygrid-event", "fc-daygrid-block-event");
+                fcEventElement.innerHTML = `<b>${response.patient_name} ${response.family_name}</b><br> <b>Unconfirmed</b>`;
+                fcEventElement.style.backgroundColor = 'orange';
+                fcEventElement.dataset.encounterId = response.encounter_id
+                externalEvents.appendChild(fcEventElement);
+
+                new Draggable(fcEventElement, {
+                    eventData: {
+                        title: fcEventElement.innerText,
+                        duration: "00:30",
+                        backgroundColor: "orange",
+                        borderColor: "black",
+                        textColor: "black",
+                        id: fcEventElement.encounterId
+                    },
+                });
+                console.log("this is the event data", eventData)
+
+
+                var newEvent = calendar.addEvent(eventData);
+                $('#appointmentModal').modal('hide')
+
+            }
+        });
+    };
+
+    //2-Submit Resize Form
+    const resizeForm = document.getElementById("resize-form");
+    resizeForm.onsubmit = function (event) {
+        event.preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: '/resize_appointment',
+            data: $("#resize-form").serialize(),
+            dataType: 'json',
+            success: function (response) {
+                var event_id = response.encounter_id;
+                var get_event_id = calendar.getEventById(event_id)
+                get_event_id.remove()
+
+                var eventData = {
+                    id: response.encounter_id,
+                    title: 'Booked Appointment',
+                    start: response.start_time,
+                    end: response.end_time,
+                    extendedProps: {
+                        patientName: response.patient_name,
+                        familyName: response.family_name,
+                        phone: response.phone,
+
+                    }
+
+                };
+
+                var newEvent = calendar.addEvent(eventData);
+                $('#resizeModal').modal('hide')
+            },
+            error: function (xhr, status, error) {
+                console.log('Error', error)
+            }
+
+        })
+    };
+
+    //SEARCH FUNCTIONS AND VALIDATION FUNCTIONS
+
+    //1-search for patient names
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.getElementById("search-patient");
     const searchResults = document.getElementById("search-results");
@@ -208,8 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
     });
-
-//show procedures when appointment type is procedure - original modal
+    //2- show procedures when appointment type is procedure - original modal
     const appointmentType = document.querySelector('[name="select-appointment"]');
     const procedureType = document.querySelector('[name="procedure-group"]');
     appointmentType.addEventListener("change", function () {
@@ -220,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
     });
-    //show procedures when appointment type is procedure - resize modal
+//3-show procedures when appointment type is procedure - resize modal
     const apptype = document.querySelector('[name="select-appointment-resize"]');
     const protype = document.querySelector('[name="procedure-group-resize"]');
     apptype.addEventListener("change", function () {
@@ -232,19 +356,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    //show procedures when appointment type is procedure - drop modal
-    const appointype = document.querySelector('[name="select-appointment-drop"]');
-    const procedtype = document.querySelector('[name="procedure-group-drop"]');
-    appointype.addEventListener("change", function () {
-        if (this.value === 'procedure') {
-            procedtype.style.display = 'block';
-        } else {
-            procedtype.style.display = 'none';
-        }
 
-    });
-
-// show instructions mapped with procedure type - original modal
+//4-show instructions mapped with procedure type - original modal
     const procedureByType = document.querySelector('[name="select-procedure"]');
 
     procedureByType.addEventListener("change", async (event) => {
@@ -274,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    // show instructions mapped with procedure type - resize
+//5-show instructions mapped with procedure type - resize
     const procByType = document.querySelector('[name="select-procedure-resize"]');
 
     procByType.addEventListener("change", async (event) => {
@@ -304,150 +417,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    // show instructions mapped with procedure type - drag and drop
-    const prByType = document.querySelector('[name="select-procedure-drop"]');
-
-    prByType.addEventListener("change", async (event) => {
-        event.preventDefault();
-        queryInput = prByType.value
-        const response = await fetch(`/search_procedure?query=${queryInput}`)
-        const data = await response.json();
-        const prior_instruction = document.getElementById("prior-reminder-drop");
-        const prior_instruction_label = document.getElementById("prior-reminder-label-drop");
-        const post_instruction = document.getElementById("post-reminder-drop");
-        const post_instruction_label = document.getElementById("post-reminder-label-drop");
-
-        if (data.prior_instruction) {
-            prior_instruction.style.display = 'block';
-            prior_instruction_label.innerHTML = data.prior_instruction;
-        } else {
-            prior_instruction.style.display = 'none';
-
-        }
-        if (data.post_instruction) {
-            post_instruction.style.display = 'block';
-            post_instruction_label.innerHTML = data.post_instruction;
-        } else {
-            post_instruction.style.display = 'none';
-
-        }
-
-    });
-
-//submit booking appointment form
-    const bookingForm = document.getElementById("booking-form");
-    bookingForm.onsubmit = function (event) {
-        event.preventDefault()
-        $.ajax({
-            type: 'POST',
-            url: '/book_appointment',
-            data: $("#booking-form").serialize(),
-            dataType: 'json',
-            success: function (response) {
-
-                var eventData = {
-                    id: response.encounter_id,
-                    title: 'Booked Appointment',
-                    start: response.start_time,
-                    end: response.end_time,
-                    extendedProps: {
-                        patientName: response.patient_name,
-                        familyName: response.family_name,
-                        phone: response.phone
-
-                    }
-
-                };
-
-                var newEvent = calendar.addEvent(eventData);
-                var generatedId = newEvent.id;
-                var getgeneratedId = calendar.getEventById(generatedId)
-                $('#appointmentModal').modal('hide')
-            },
-            error: function (xhr, status, error) {
-                console.log('Error', error)
-            }
-
-        })
-    };
-
-    //submit resize form
-    const resizeForm = document.getElementById("resize-form");
-    resizeForm.onsubmit = function (event) {
-        event.preventDefault()
-        $.ajax({
-            type: 'POST',
-            url: '/resize_appointment',
-            data: $("#resize-form").serialize(),
-            dataType: 'json',
-            success: function (response) {
-                var event_id = response.encounter_id;
-                var get_event_id = calendar.getEventById(event_id)
-                get_event_id.remove()
-
-                var eventData = {
-                    id: response.encounter_id,
-                    title: 'Booked Appointment',
-                    start: response.start_time,
-                    end: response.end_time,
-                    extendedProps: {
-                        patientName: response.patient_name,
-                        familyName: response.family_name,
-                        phone: response.phone,
-
-                    }
-
-                };
-
-                var newEvent = calendar.addEvent(eventData);
-                $('#resizeModal').modal('hide')
-            },
-            error: function (xhr, status, error) {
-                console.log('Error', error)
-            }
-
-        })
-    };
-
-    const dropForm = document.getElementById("drop-form");
-    dropForm.onsubmit = function (event) {
-        event.preventDefault()
-        $.ajax({
-            type: 'POST',
-            url: '/drop_appointment',
-            data: $("#drop-form").serialize(),
-            dataType: 'json',
-            success: function (response) {
-                var event_id = response.encounter_id;
-                var get_event_id = calendar.getEventById(event_id)
-                get_event_id.remove()
-
-                var eventData = {
-                    id: response.encounter_id,
-                    title: 'Booked Appointment',
-                    start: response.start_time,
-                    end: response.end_time,
-                    extendedProps: {
-                        patientName: response.patient_name,
-                        familyName: response.family_name,
-                        phone: response.phone
-
-                    }
-
-                };
-
-                var newEvent = calendar.addEvent(eventData);
-                $('#dropModal').modal('hide')
-            },
-            error: function (xhr, status, error) {
-                console.log('Error', error)
-            }
-
-        })
-    };
-
-})
-
-
-
-
+});
