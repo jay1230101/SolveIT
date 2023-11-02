@@ -383,77 +383,72 @@
 
 {#Reminder Modal #}
 <div id="reminderModal" class="modal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
                 <p class="modal-title">Reminder Appointment</p>
                 <button id="close-sign-reminder" type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <ul class="list-group" id="search-results"></ul>
-            </div>
             <form id="reminder-form">
                 <div class="modal-body">
 
                     <div class="row">
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-6 form-group">
                             <label class="book-appointment-font">First Name</label>
-                            <input class="form-control" readonly type="text" name="first-name">
+                            <input class="form-control" readonly type="text" name="first-name-reminder">
                         </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-6 form-group">
                             <label class="book-appointment-font">Family Name</label>
-                            <input class="form-control" readonly type="text" name="family-name">
+                            <input class="form-control" readonly type="text" name="family-name-reminder">
                         </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font">Phone Number</label>
-                            <input class="form-control" readonly type="text" name="phone">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label class="book-appointment-font"> Treating Physician</label>
-                            <select name="select-physician" class="form-control" required>
-                                <option value="" selected readonly>Select physician ...</option>
-                                <option value="johny.achkar01@gmail.com">Dr Bassem Safadi</option>
-                                <option value="johny.achkar03@gmail.com">Dr Hussain Ismaeel</option>
-                            </select>
-                        </div>
-
-
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="book-appointment-font">Phone Number</label>
+                            <input class="form-control" readonly type="text" name="phone-reminder">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="book-appointment-font"> Treating Physician</label>
+                            <input class="form-control" readonly type="text" name="physician-reminder">
+
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label class="book-appointment-font">Date 1 </label>
                             <input class="form-control" type="date" name="date1" required>
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div id="date2div" class="col-md-4 form-group" style="display: none">
                             <label class="book-appointment-font">Date 2</label>
-                            <input class="form-control" type="time" name="date2" required>
+                            <input class="form-control" type="date" name="date2" required>
                         </div>
 
                         <input type="hidden" name="event_id">
 
-                        <div class="col-md-4 form-group">
+                        <div id="date3div" class="col-md-4 form-group" style="display: none">
                             <label class="book-appointment-font">Date 3</label>
-                            <input class="form-control" type="time" name="date3" required>
+                            <input class="form-control" type="date" name="date3" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label class="book-appointment-font">Time 1 </label>
-                            <input class="form-control" type="date" name="time1" required>
+                            <input class="form-control" type="time" name="time1" required>
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div id="time2div" class="col-md-4 form-group" style="display: none">
                             <label class="book-appointment-font">Time 2</label>
                             <input class="form-control" type="time" name="time2" required>
                         </div>
 
-                        <div class="col-md-4 form-group">
+                        <div id="time3div" class="col-md-4 form-group" style="display: none">
                             <label class="book-appointment-font">Time 3</label>
                             <input class="form-control" type="time" name="time3" required>
                         </div>
                     </div>
 
-                    <div class="row" >
+                    <div class="row">
                         <div class="col-md-12 form-group">
                             <label class="book-appointment-font" style="display: flex;justify-content: center">Reminders
                                 & Instructions</label>
@@ -486,9 +481,14 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="close-button-reminder" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                    <button name="suggest-appointments" type="button" class="btn btn-secondary">Suggest
+                        Appointments
                     </button>
-                    <button name="submit-button" type="submit" class="btn btn-primary">Recommend Appointments</button>
+                    <button id="close-button-reminder" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button name="submit-button" type="submit" class="btn btn-secondary">Recommend to Patient
+                    </button>
                 </div>
             </form>
         </div>

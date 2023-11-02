@@ -153,6 +153,12 @@ def book_appointment():
         prior_proc_reminder = request.form.get('prior_procedure_reminder')
         post_proc_reminder = request.form.get('post_procedure_reminder')
 
+        doctor_instance = Doctors.query.filter_by(email=treating_physician).first()
+        doctor_name=doctor_instance.name
+        doctor_family=doctor_instance.family
+        fullDoctorName = doctor_name+ ""+ doctor_family
+
+
         new_encounter = bookingEncounter(
             date=date,
             start_time=start_time,
@@ -185,6 +191,7 @@ def book_appointment():
             'encounter_id': encounter_id,
             'phone': phone,
             'appointment':appointment_type,
+            'treating_physician':fullDoctorName
 
         }
         print("the response is", response)
