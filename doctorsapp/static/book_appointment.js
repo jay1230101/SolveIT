@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var Calendar = FullCalendar.Calendar;
     var Draggable = FullCalendar.Draggable;
     var calendarEl = document.getElementById('calendar');
-
+    const lastUsedEncounterIds = {};
 
     var calendar = new Calendar(calendarEl, {
         timeZone: 'local',
@@ -22,15 +22,36 @@ document.addEventListener('DOMContentLoaded', function () {
         selectable: true,
         editable: true,
         droppable: true,
+
         drop: function (info) {
             const encounterId = info.draggedEl.dataset.encounterId;
-            // is the "remove after drop" checkbox checked?
+
+            // Increment the encounter ID by 1
+            if (!lastUsedEncounterIds[encounterId]) {
+                lastUsedEncounterIds[encounterId] = parseInt(encounterId);
+            }
+            lastUsedEncounterIds[encounterId]++;
+            const encounterIdDragged = lastUsedEncounterIds[encounterId];
+
+            // Check if the limit has been reached (3 draggable events)
+            if (lastUsedEncounterIds[encounterId] - parseInt(encounterId) > 3) {
+                alert("You have reached the maximum number of draggable events for this encounter ID.");
+                info.revert(); // Revert the draggable event back to its original position
+                return;
+            }
+
+
+            console.log("the encounter id is:", encounterId);
+            console.log("the dragged encounter id is:", encounterIdDragged);
+            $("#reminderModal").modal('show');
+
             if (checkbox.checked) {
                 // if so, remove the element from the "Draggable Events" list
                 info.draggedEl.parentNode.removeChild(info.draggedEl);
-
             }
         },
+
+
         select: function (info) {
 
             const calendarDate = info.start;
@@ -164,11 +185,11 @@ document.addEventListener('DOMContentLoaded', function () {
         $('[name="family-name"]').val(familyName);
         $('[name="phone"]').val(phone);
 
-        closeSign.addEventListener("click",function(event){
+        closeSign.addEventListener("click", function (event) {
             $("#resizeModal").modal('hide');
             info.revert()
         });
-        closeButton.addEventListener("click",function(){
+        closeButton.addEventListener("click", function () {
             $("#resizeModal").modal('hide');
             info.revert()
         })
