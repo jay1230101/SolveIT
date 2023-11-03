@@ -92,6 +92,27 @@ class bookingEncounter(db.Model):
     postProcedureInstructions = db.Column(db.String(255))
     booked_by_who = db.Column(db.String(255))
 
+
+class suggestedAppointments(db.Model):
+    __tablename__='suggested_appointments'
+    id=db.Column(db.Integer,primary_key=True)
+    event_id=db.Column(db.String(255))
+    event_id_a=db.Column(db.String(255))
+    event_id_b=db.Column(db.String(255))
+    event_id_c=db.Column(db.String(255))
+    booking_reminder=db.Column(db.String(255))
+    appointment_reminder=db.Column(db.String(255))
+    weather_reminder=db.Column(db.String(255))
+    traffic_reminder=db.Column(db.String(255))
+    date1=db.Column(db.Date())
+    time1=db.Column(db.Time())
+    date2=db.Column(db.Date())
+    time2=db.Column(db.Time())
+    date3=db.Column(db.Date())
+    time3=db.Column(db.Time())
+    approved_date=db.Column(db.Date())
+    approved_time=db.Column(db.Time())
+
 class EMR_by_Encounter(db.Model):
     __tablename__='emr_by_encounter'
     id=db.Column(db.Integer,primary_key=True)

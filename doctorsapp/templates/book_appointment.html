@@ -420,32 +420,48 @@
                             <label class="book-appointment-font">Date 1 </label>
                             <input class="form-control" type="date" name="date1" required>
                         </div>
-                        <div id="date2div" class="col-md-4 form-group" style="display: none">
+                        {#                        <div id="date2div" class="col-md-4 form-group" style="display: none">#}
+                        <div id="date2div" class="col-md-4 form-group">
                             <label class="book-appointment-font">Date 2</label>
-                            <input class="form-control" type="date" name="date2" required>
+                            <input class="form-control" type="date" name="date2">
                         </div>
 
                         <input type="hidden" name="event_id">
-
-                        <div id="date3div" class="col-md-4 form-group" style="display: none">
+                        {#                        <div id="date3div" class="col-md-4 form-group" style="display: none">#}
+                        <div id="date3div" class="col-md-4 form-group">
                             <label class="book-appointment-font">Date 3</label>
-                            <input class="form-control" type="date" name="date3" required>
+                            <input class="form-control" type="date" name="date3">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label class="book-appointment-font">Time 1 </label>
-                            <input class="form-control" type="time" name="time1" required>
-                        </div>
-                        <div id="time2div" class="col-md-4 form-group" style="display: none">
-                            <label class="book-appointment-font">Time 2</label>
-                            <input class="form-control" type="time" name="time2" required>
+                            <input class="form-control" type="time" name="time1">
                         </div>
 
-                        <div id="time3div" class="col-md-4 form-group" style="display: none">
-                            <label class="book-appointment-font">Time 3</label>
-                            <input class="form-control" type="time" name="time3" required>
+                        {#                        <div id="time2div" class="col-md-4 form-group" style="display: none">#}
+                        <div id="time2div" class="col-md-4 form-group">
+                            <label class="book-appointment-font">Time 2</label>
+                            <input class="form-control" type="time" name="time2">
                         </div>
+
+
+                        {#                        <div id="time3div" class="col-md-4 form-group" style="display: none">#}
+                        <div id="time3div" class="col-md-4 form-group">
+                            <label class="book-appointment-font">Time 3</label>
+                            <input class="form-control" type="time" name="time3">
+                        </div>
+                        <input hidden name="hidden_time1">
+                        <input hidden name="hidden_time2">
+                        <input hidden name="hidden_time3">
+                        <input hidden name="event_id_reminder1">
+                        <input hidden name="event_id_reminder2">
+                        <input hidden name="event_id_reminder3">
+                        <input hidden name="original_event_id">
+                        <input hidden name="button-clicked" value="" id="button-clicked">
+
+
+
                     </div>
 
                     <div class="row">
@@ -481,14 +497,16 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button name="suggest-appointments" type="button" class="btn btn-secondary">Suggest
-                        Appointments
-                    </button>
-                    <button id="close-button-reminder" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button id="close-button-reminder" type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button name="submit-button" type="submit" class="btn btn-secondary">Recommend to Patient
+                    <button name="submit-button" type="submit" class="btn btn-secondary" value="submit-patient">
+                        suggest to Patient
                     </button>
+                    <button name="save-changes" type="submit" class="btn btn-secondary" value="save-form">Save
+                    </button>
+
                 </div>
             </form>
         </div>
