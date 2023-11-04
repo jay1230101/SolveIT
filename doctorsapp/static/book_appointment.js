@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     const lastUsedEncounterIds = {};
     const firstThreeDraggableEvents = [];
-    const eventLabels = ['a', 'b', 'c']
     let eventLabelIndex = 0;
 
     var calendar = new Calendar(calendarEl, {
@@ -28,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         drop: function (info) {
             const encounterId = info.draggedEl.dataset.encounterId;
+            console.log("the encounter id is ", encounterId)
             const patientName = info.draggedEl.dataset.patientName;
             const familyName = info.draggedEl.dataset.familyName;
             const phone = info.draggedEl.dataset.phone;
@@ -35,16 +35,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const event_id_a = info.draggedEl.dataset.event_id_a;
             const event_id_b = info.draggedEl.dataset.event_id_b;
             const event_id_c = info.draggedEl.dataset.event_id_c;
-            console.log("the event id a is",event_id_a)
+
+            const eventLabels = [event_id_a, event_id_b, event_id_c]
 
 
             if (eventLabelIndex < eventLabels.length) {
-                const eventLabel = eventLabels[eventLabelIndex];
-
-                const labeledEncounterId = encounterId + '-' + eventLabel;
-
+                const eventLabel = eventLabels[eventLabelIndex]
+                console.log("the event lab index", eventLabelIndex)
                 eventLabelIndex++;
-
 
                 const date = info.date;
                 const dateString = date.toISOString().slice(0, 10);
@@ -53,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const startFinal = startHour + ":" + startMinutes;
                 const startStr = info.dateStr;
                 console.log("the date str is", startStr)
+
+                const labeledEncounterId = eventLabel;
+                console.log("the labeled encounter is", labeledEncounterId)
 
                 if (!lastUsedEncounterIds[labeledEncounterId]) {
                     lastUsedEncounterIds[labeledEncounterId] = parseInt(encounterId);
@@ -65,23 +66,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     startStr: startStr
                 };
                 firstThreeDraggableEvents.push(draggableEventDetails);
-                console.log("the draggable event details", draggableEventDetails)
+                console.log("the draggable event details", draggableEventDetails);
 
-                /*
-
-                $("#reminderModal").modal('show');
                 $('[name="first-name-reminder"]').val(patientName);
                 $('[name="family-name-reminder"]').val(familyName);
                 $('[name="phone-reminder"]').val(phone);
-                $('[name="physician-reminder"]').val(physician)
-                $('[name="original_event_id"]').val(encounterId)
+                $('[name="physician-reminder"]').val(physician);
+                $('[name="original_event_id"]').val(encounterId);
 
-                if (eventLabel === 'a') {
+                if (eventLabel === event_id_a) {
+                    console.log("event label a", eventLabel)
                     $('[name="event_id_reminder1"]').val(firstThreeDraggableEvents[0].encounter_id);
                     $('[name="date1"]').val(firstThreeDraggableEvents[0].date);
                     $('[name="time1"]').val(firstThreeDraggableEvents[0].startTime);
                     $('[name="hidden_time1"]').val(firstThreeDraggableEvents[0].startStr);
-                } else if (eventLabel === 'b') {
+                } else if (eventLabel === event_id_b) {
+                    console.log("event label b", eventLabel)
                     const dateDiv2 = document.getElementById("date2div");
                     const timeDiv2 = document.getElementById("time2div");
                     dateDiv2.style.display = 'block';
@@ -95,7 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     $('[name="date2"]').val(firstThreeDraggableEvents[1].date);
                     $('[name="time2"]').val(firstThreeDraggableEvents[1].startTime);
                     $('[name="hidden_time2"]').val(firstThreeDraggableEvents[1].startStr);
-                } else if (eventLabel === 'c') {
+
+                } else if (eventLabel === event_id_c) {
+                    console.log("event label c", eventLabel)
                     const dateDiv2 = document.getElementById("date2div");
                     const timeDiv2 = document.getElementById("time2div");
                     const dateDiv3 = document.getElementById("date3div");
@@ -119,10 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     $('[name="time3"]').val(firstThreeDraggableEvents[2].startTime);
                     $('[name="hidden_time3"]').val(firstThreeDraggableEvents[2].startStr);
 
-
                 }
-                */
-
+                $("#reminderModal").modal('show');
 
                 const suggestMoreAppts = document.querySelector('[name="submit-button"]');
                 suggestMoreAppts.addEventListener("click", function () {
@@ -135,10 +135,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     info.draggedEl.parentNode.removeChild(info.draggedEl);
                 }
             } else {
-                alert("You have reached the maximum number of draggable events for this encounter ID.")
+                alert("You cannot drag more than 3 events")
                 info.revert()
             }
-
 
         },
 
@@ -166,19 +165,22 @@ document.addEventListener('DOMContentLoaded', function () {
             $('[name="start-time"]').val(startTime);
             $('[name="end-time"]').val(endTime);
             $("#appointmentModal").modal('show');
-        },
+        }
+        ,
 
         eventResize: function (info) {
 
             $("#resizeModal").modal('show')
             editAppointment(info)
 
-        },
+        }
+        ,
         eventDrop: function (info) {
             $("#resizeModal").modal('show');
             editAppointment(info)
 
-        },
+        }
+        ,
         eventClick: function (info) {
 
             var event_id = info.event.id;
@@ -234,14 +236,15 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
 
-        },
+        }
+        ,
 
     });
 
     calendar.render();
 
-    //FUNCTIONS
-    // 1- Edit Calendar Event Function
+//FUNCTIONS
+// 1- Edit Calendar Event Function
     function editAppointment(info) {
         var event_id = info.event.id;
 
@@ -288,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    //2-Click Calendar Event Function
+//2-Click Calendar Event Function
     function clickEvent(info) {
         var event_id = info.event.id
         var name = info.event.extendedProps.patientName;
@@ -303,11 +306,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    //SUBMIT FORMS
-    //1-submit the booking form and add the external events
+//SUBMIT FORMS
+//1-submit the booking form and add the external events
     const bookingForm = document.getElementById("booking-form");
     const checkbox = document.getElementById('drop-remove');
     const externalEvents = document.getElementById("external-events");
+    var get_event_original_id;
+    var storedEvents = []
 
     bookingForm.onsubmit = function (event) {
         event.preventDefault();
@@ -333,7 +338,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         encounter_id_c: response.encounter_id_c
                     }
                 };
-                console.log("the evento data is",eventData)
+                storedEvents.push(eventData)
+                console.log("the evento data is", eventData)
 
                 // Create a new fcEventElement for each event
                 const fcEventElement = document.createElement("div");
@@ -349,8 +355,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 fcEventElement.dataset.event_id_b = response.encounter_id_b;
                 fcEventElement.dataset.event_id_c = response.encounter_id_c;
                 externalEvents.appendChild(fcEventElement);
-                console.log("the external event is ",externalEvents)
+                console.log("the external event is ", externalEvents)
 
+                get_event_original_id = response.encounter_id
+                console.log("the get event original id is is is ", get_event_original_id)
                 new Draggable(fcEventElement, {
                     eventData: {
                         title: fcEventElement.innerText,
@@ -358,7 +366,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         backgroundColor: "orange",
                         borderColor: "black",
                         textColor: "black",
-                        id: fcEventElement.encounterId
+                        id: response.encounter_id,
+                        extendedProps: {
+                            eventIdA: response.encounter_id_a,
+                            eventIdB: response.encounter_id_b,
+                            eventIdC: response.encounter_id_c
+                        }
                     },
                     revert: true,
                 });
@@ -372,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    //2-Submit Resize Form
+//2-Submit Resize Form
 
     const resizeForm = document.getElementById("resize-form");
     resizeForm.onsubmit = function (event) {
@@ -412,54 +425,102 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 
-    //3- Submit the save changes of the draggable event
+//3- Submit the save changes of the draggable event
     const saveChanges = document.querySelector('[name="save-changes"]');
     const reminderForm = document.getElementById("reminder-form");
     const buttonClickedInput = document.getElementById("button-clicked");
+    const date2Display = document.getElementById("date2div");
+    const date3Display = document.getElementById("date3div");
+    const time2Display = document.getElementById("time2div");
+    const time3Display = document.getElementById("time3div");
 
     saveChanges.addEventListener("click", function () {
-        buttonClickedInput.value = 'save-form'
+        buttonClickedInput.value = 'save-form';
+        date2Display.style.display = 'block';
+        time2Display.style.display = 'block';
+        date3Display.style.display = 'block';
+        time3Display.style.display = 'block';
+
     })
 
     reminderForm.onsubmit = function (event) {
         event.preventDefault();
         $.ajax({
-            type: 'POST',
-            url: '/suggested_appointments',
-            data: $("#reminder-form").serialize(),
-            dataType: 'json',
+                type: 'POST',
+                url: '/suggested_appointments',
+                data: $("#reminder-form").serialize(),
+                dataType: 'json',
 
-            success: function (response) {
-                var buttonClicked = buttonClickedInput.value;
-                if (buttonClicked === 'save-form') {
-                    var event_id = response.event_id_a;
-                    console.log("the event id a", event_id)
-                    var get_event_index = calendar.getEventById(event_id);
-                    console.log("the get event id", get_event_index)
-                    get_event_index.remove()
+                success: function (response) {
+                    const events = calendar.getEvents();
+                    console.log("the event ids are", calendar.getEvents())
+                    var buttonClicked = buttonClickedInput.value;
+                    if (buttonClicked === 'save-form') {
+                        if (response.event_id_a) {
+                            const event_id_a = response.event_id_a;
+                            const eventToRemovea = events.find(event => event.extendedProps.eventIdA === event_id_a);
+                            eventToRemovea.remove()
+                            var eventData = {
+                                id: response.event_id,
+                                title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
+                                start: response.time1ISO,
+                                borderColor: "black",
+                                textColor: "black",
+                                backgroundColor: "orange",
+                                extendedProps: {
+                                    patientName: response.patient_name,
+                                    familyName: response.family_name,
+                                }
+                            };
+                            var newEvent = calendar.addEvent(eventData);
 
-                    var eventData = {
-                        id: response.event_id,
-                        title: response.patient_name + ' ' + response.family_name,
-                        start: response.time1ISO,
-                        extendedProps: {
-                            patientName: response.patient_name,
-                            familyName: response.family_name,
+                        } else if (response.event_id_b) {
+                            const event_id_b = response.event_id_b;
+                            const eventToRemoveb = events.find(event => event.extendedProps.eventIdB === event_id_b);
+                            eventToRemoveb.remove();
+                            var eventDatab = {
+                                id: response.event_id,
+                                title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
+                                start: response.time2ISO,
+                                borderColor: "black",
+                                textColor: "black",
+                                backgroundColor: "orange",
+                                extendedProps: {
+                                    patientName: response.patient_name,
+                                    familyName: response.family_name,
+                                }
+                            };
+                            var newEventb = calendar.addEvent(eventDatab);
+                        } else if (response.event_id_c) {
+                            const event_id_c = response.event_id_c;
+                            const eventToRemovec = events.find(event => event.extendedProps.eventIdC === event_id_c);
+                            eventToRemovec.remove();
+                            var eventDatac = {
+                                id: response.event_id,
+                                title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
+                                start: response.time3ISO,
+                                borderColor: "black",
+                                textColor: "black",
+                                backgroundColor: "orange",
+                                extendedProps: {
+                                    patientName: response.patient_name,
+                                    familyName: response.family_name,
+                                }
+                            };
+                            var newEventc = calendar.addEvent(eventDatac);
                         }
-                    };
-                    var newEvent = calendar.addEvent(eventData);
-                } else {
 
+                    }
+                    $('#reminderModal').modal('hide')
                 }
-                $('#reminderModal').modal('hide')
             }
-        })
+        )
     }
 
 
-    //SEARCH FUNCTIONS AND VALIDATION FUNCTIONS
+//SEARCH FUNCTIONS AND VALIDATION FUNCTIONS
 
-    //1-search for patient names
+//1-search for patient names
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.getElementById("search-patient");
     const searchResults = document.getElementById("search-results");
@@ -507,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
     });
-    //2- show procedures when appointment type is procedure - original modal
+//2- show procedures when appointment type is procedure - original modal
     const appointmentType = document.querySelector('[name="select-appointment"]');
     const procedureType = document.querySelector('[name="procedure-group"]');
     appointmentType.addEventListener("change", function () {
@@ -591,4 +652,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-});
+})
+;

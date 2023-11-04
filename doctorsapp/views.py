@@ -188,9 +188,9 @@ def book_appointment():
             'patient_name': name,
             'family_name': family,
             'encounter_id': encounter_id,
-            'encounter_id_a':str(encounter_id)+'-'+'a',
-            'encounter_id_b':str(encounter_id)+'-'+'b',
-            'encounter_id_c':str(encounter_id)+'-'+'c',
+            'encounter_id_a': str(encounter_id) + '-' + 'a',
+            'encounter_id_b': str(encounter_id) + '-' + 'b',
+            'encounter_id_c': str(encounter_id) + '-' + 'c',
             'phone': phone,
             'appointment': appointment_type,
             'treating_physician': fullDoctorName
@@ -214,7 +214,7 @@ def resize_appointment():
         end_time = request.form.get('end-time')
         constructed_start_time = date + "T" + start_time + ":00+03:00"
         constructed_end_time = date + "T" + end_time + ":00+03:00"
-        appointment_type=request.form.get('select-appointment-resize')
+        appointment_type = request.form.get('select-appointment-resize')
         booking_confirmation = request.form.get('booking_reminder')
         appointment_confirmation = request.form.get('appointment_reminder')
         weather = request.form.get('weather_reminder')
@@ -242,7 +242,7 @@ def resize_appointment():
                 'family_name': family,
                 'encounter_id': eventID,
                 'phone': phone,
-                'appointment':appointment_type
+                'appointment': appointment_type
             }
             print("this is the resize response", response)
             return jsonify(response)
@@ -257,45 +257,51 @@ def resize_appointment():
 def suggested_appointments():
     if request.method == 'POST':
         event_id = request.form.get('original_event_id')
-        print("the event id is here",event_id)
-        event_id_a=request.form.get('event_id_reminder1')
-        print("the event id reminder a",event_id_a)
-        event_id_b=request.form.get('event_id_reminder2')
-        event_id_c=request.form.get('event_id_reminder3')
+        event_id_a = request.form.get('event_id_reminder1')
+        event_id_b = request.form.get('event_id_reminder2')
+        event_id_c = request.form.get('event_id_reminder3')
+        saveButton = request.form.get('button-clicked')
 
-        saveButton=request.form.get('button-clicked')
-        print("the save button is ",saveButton)
-
-
-        sendPatientButton=request.form.get('submit-button')
+        sendPatientButton = request.form.get('submit-button')
 
         booking_encounter = bookingEncounter.query.filter_by(id=event_id).first()
         patient_name = booking_encounter.patient_name
         family_name = booking_encounter.patient_family_name
-        phone = booking_encounter.phone
-        treating_physician = booking_encounter.treating_physician
         date1 = request.form.get("date1")
-        print("the date1 is ", date1)
         time1 = request.form.get("time1")
-        print("the time 1 is", time1)
-        time1ISO=request.form.get("hidden_time1")
-        print("the time 1 ISO",time1ISO)
+        constructed_time1 = date1 + "T" + time1 + ":00+03:00"
+
+
         date2 = request.form.get("date2")
         if not date2:
-            date2=None
+            date2 = None
         time2 = request.form.get("time2")
-        time2ISO=request.form.get("hidden_time2")
+        constructed_time2 = None
+        if not time2:
+            time2 = None
+        else:
+            constructed_time2 = date2 + "T" + time2 + ":00+03:00"
+
+
         date3 = request.form.get("date3")
         if not date3:
-            date3=None
+            date3 = None
         time3 = request.form.get("time3")
-        time3ISO=request.form.get('hidden_time3')
+        constructed_time3 = None
+        if not time3:
+            time3 = None
+        else:
+            constructed_time3 = date3 + "T" + time3 + ":00+03:00"
+
+
         booking_reminder = request.form.get("booking_reminder")
         appointment_reminder = request.form.get("appointment_reminder")
         weather_reminder = request.form.get("weather_reminder")
         traffic_reminder = request.form.get("traffic_reminder")
 
-        if saveButton == "save-form":
+
+        if (saveButton == "save-form" and event_id_a and not event_id_b and not event_id_c):
+
             suggested_appt = suggestedAppointments(
                 event_id=event_id,
                 event_id_a=event_id_a,
@@ -314,22 +320,66 @@ def suggested_appointments():
             )
             db.session.add(suggested_appt)
             db.session.commit()
-
-            response={
-                'event_id':event_id,
-                'event_id_a':event_id_a,
-                'patient_name':patient_name,
-                'family_name':family_name,
-                'time1ISO':time1ISO,
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_a': event_id_a,
+                'time1ISO': constructed_time1
             }
-            print("the draggable response is ",response)
+            print("the first response", response)
             return jsonify(response)
+
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and not event_id_c):
+            event = suggestedAppointments.query.filter_by(event_id=event_id).first()
+            event.event_id_b = event_id_b,
+            event.booking_reminder = booking_reminder,
+            event.appointment_reminder = appointment_reminder,
+            event.weather_reminder = weather_reminder,
+            event.traffic_reminder = traffic_reminder,
+            event.date2 = date2,
+            event.time2 = time2
+
+            db.session.commit()
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_b': event_id_b,
+                'time2ISO': constructed_time2
+            }
+            print("the response is", response)
+            return jsonify(response)
+
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
+            event = suggestedAppointments.query.filter_by(event_id=event_id).first()
+            event.event_id_c = event_id_c,
+            event.booking_reminder = booking_reminder,
+            event.appointment_reminder = appointment_reminder,
+            event.weather_reminder = weather_reminder,
+            event.traffic_reminder = traffic_reminder,
+            event.date3 = date3,
+            event.time3 = time3
+
+            db.session.commit()
+
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_c': event_id_c,
+                'time3ISO': constructed_time3
+            }
+            print("the response is", response)
+            return jsonify(response)
+
     return render_template("book_appointment.html")
+
 
 @main.route('/emr', methods=['GET', 'POST'])
 def emr():
-
     return render_template("emr.html")
+
 
 @main.route('/search_patient', methods=['GET', 'POST'])
 def search_patient():
@@ -346,6 +396,7 @@ def search_patient():
             'email': patient.email,
         })
     return jsonify(results)
+
 
 @main.route('/search_procedure', methods=['GET', 'POST'])
 def search_procedure():
@@ -367,10 +418,12 @@ def search_procedure():
         }
         return jsonify(response)
 
+
 def generate_token():
     alphabet = string.ascii_letters + string.digits
     token = ''.join(secrets.choice(alphabet) for _ in range(9))
     return token
+
 
 @main.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -407,6 +460,7 @@ def change_password():
 
     return render_template("change_password.html", form=form)
 
+
 @main.route('/add_token', methods=['GET', 'POST'])
 def add_token():
     form = UserForm()
@@ -419,6 +473,7 @@ def add_token():
             flash("Incorrect token or expired")
             return redirect(url_for('main.change_password'))
     return render_template("add_token.html", form=form)
+
 
 @main.route('/change_password_final', methods=['GET', 'POST'])
 def change_password_final():
@@ -451,6 +506,7 @@ def change_password_final():
             return redirect(url_for('main.change_password'))
 
     return render_template("change_password_final.html", form=form)
+
 
 @main.route('/add_doctors', methods=['GET', 'POST'])
 @login_required
@@ -493,6 +549,7 @@ def add_doctors():
         flash("You don't have permission to access this page")
         return redirect(url_for('main.home'))
 
+
 @main.route('/add_assistant', methods=['GET', 'POST'])
 @login_required
 def add_assistant():
@@ -532,6 +589,7 @@ def add_assistant():
 
     return render_template('add_assistant.html')
 
+
 @main.route('/deactivate_user', methods=['GET', 'POST'])
 def deactivate_user():
     if request.method == 'POST':
@@ -555,6 +613,7 @@ def deactivate_user():
             return redirect(url_for('main.deactivate_user'))
 
     return render_template("deactivate_user.html")
+
 
 @main.route('/add_admin', methods=['GET', 'POST'])
 def add_admin():
@@ -585,10 +644,12 @@ def add_admin():
             return redirect(url_for('main.home'))
     return render_template("add_admin.html")
 
+
 @main.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin_dashboard():
     return render_template("admin_dashboard.html")
+
 
 @main.route('/logout')
 @login_required
