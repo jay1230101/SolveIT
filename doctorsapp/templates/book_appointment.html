@@ -341,7 +341,7 @@
 </div>
 
 
-{#click event #}
+{#click event - regular appointment #}
 <div id="clickModal" class="modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -370,6 +370,37 @@
                                  alt="Calendar Icon" style="margin-right: 10px">
                             <span id="deleting" class="align-middle">Delete Event</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{#click event for draggable events#}
+<div id="clickModalDraggable" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title">Appointment Pathways</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            <img id="delete-img-draggable" class="book-appointment-icon" src="../static/delete.png"
+                                 alt="Calendar Icon" style="margin-right: 10px">
+                            <span id="deleting-draggable" class="align-middle">Delete Event</span>
+                        </div>
+                        <div class="col-md-4"></div>
                     </div>
                 </div>
             </div>
@@ -421,13 +452,13 @@
                             <input class="form-control" type="date" name="date1" required>
                         </div>
                         <div id="date2div" class="col-md-4 form-group" style="display: none">
-                        <label class="book-appointment-font">Date 2</label>
+                            <label class="book-appointment-font">Date 2</label>
                             <input class="form-control" type="date" name="date2">
                         </div>
 
                         <input type="hidden" name="event_id">
                         <div id="date3div" class="col-md-4 form-group" style="display: none">
-                        <label class="book-appointment-font">Date 3</label>
+                            <label class="book-appointment-font">Date 3</label>
                             <input class="form-control" type="date" name="date3">
                         </div>
                     </div>
@@ -438,13 +469,13 @@
                         </div>
 
                         <div id="time2div" class="col-md-4 form-group" style="display: none">
-                        <label class="book-appointment-font">Time 2</label>
+                            <label class="book-appointment-font">Time 2</label>
                             <input class="form-control" type="time" name="time2">
                         </div>
 
 
                         <div id="time3div" class="col-md-4 form-group" style="display: none">
-                        <label class="book-appointment-font">Time 3</label>
+                            <label class="book-appointment-font">Time 3</label>
                             <input class="form-control" type="time" name="time3">
                         </div>
                         <input hidden name="hidden_time1">
@@ -455,7 +486,6 @@
                         <input hidden name="event_id_reminder3">
                         <input hidden name="original_event_id">
                         <input hidden name="button-clicked" value="" id="button-clicked">
-
 
 
                     </div>

@@ -169,71 +169,79 @@ document.addEventListener('DOMContentLoaded', function () {
         ,
 
         eventResize: function (info) {
-
-            $("#resizeModal").modal('show')
-            editAppointment(info)
+            var event_id = info.event.id
+            if (event_id.includes("-a") || event_id.includes("-b") || event_id.includes("-c")) {
+                info.revert()
+            } else {
+                $("#resizeModal").modal('show')
+                editAppointment(info)
+            }
 
         }
         ,
         eventDrop: function (info) {
-            $("#resizeModal").modal('show');
-            editAppointment(info)
+            var event_id = info.event.id
+            if (event_id.includes("-a") || event_id.includes("-b") || event_id.includes("-c")) {
+                info.revert()
+            } else {
+                $("#resizeModal").modal('show');
+                editAppointment(info)
+            }
+
 
         }
         ,
         eventClick: function (info) {
-
             var event_id = info.event.id;
             console.log("the evento ido ", event_id)
             var get_event_id = calendar.getEventById(event_id);
-            $('#clickModal').modal('show');
-            const rescheduleText = document.getElementById("rescheduling");
-            const rescheduleImage = document.getElementById("rescheduling-img");
-            const deleteText = document.getElementById("deleting");
-            const deleteImage = document.getElementById("delete-img");
 
-
-            rescheduleText.addEventListener("click", function () {
-                $("#clickModal").modal('hide');
-                $("#resizeModal").modal('show');
-                clickEvent(info)
-
-
-            });
-            rescheduleImage.addEventListener("click", function () {
-                $("#clickModal").modal('hide');
-                $("#resizeModal").modal('show');
-                clickEvent(info)
-            });
-
-            deleteText.addEventListener("click", function () {
-                $("#clickModal").modal('hide');
-
-                if (get_event_id) {
+            if (event_id.includes("-a") || event_id.includes("-b") || event_id.includes("-c")) {
+                $("#clickModalDraggable").modal('show');
+                const deleteText = document.getElementById("deleting-draggable");
+                const deleteImg = document.getElementById("delete-img-draggable");
+                deleteText.addEventListener("click", function (event) {
+                    $("#clickModalDraggable").modal('hide');
                     get_event_id.remove();
-                }
+                });
+                deleteImg.addEventListener("click", function (event) {
+                    $("#clickModalDraggable").modal('hide');
+                    get_event_id.remove()
+                })
 
-                const draggableEvent = document.querySelector('.fc-event[data-encounter-id="' + event_id + '"]')
-                if (draggableEvent) {
-                    draggableEvent.remove();
-                }
-
-
-            });
-
-            deleteImage.addEventListener("click", function () {
-                $("#clickModal").modal('hide');
-                if (get_event_id) {
-                    get_event_id.remove();
-                }
-
-                const draggableEvent = document.querySelector('.fc-event[data-encounter-id="' + event_id + '"]')
-                if (draggableEvent) {
-                    draggableEvent.remove();
-                }
+            } else {
+                $('#clickModal').modal('show');
+                const rescheduleText = document.getElementById("rescheduling");
+                const rescheduleImage = document.getElementById("rescheduling-img");
+                const deleteText = document.getElementById("deleting");
+                const deleteImage = document.getElementById("delete-img");
 
 
-            });
+                rescheduleText.addEventListener("click", function () {
+                    $("#clickModal").modal('hide');
+                    $("#resizeModal").modal('show');
+                    clickEvent(info)
+
+
+                });
+                rescheduleImage.addEventListener("click", function () {
+                    $("#clickModal").modal('hide');
+                    $("#resizeModal").modal('show');
+                    clickEvent(info)
+                });
+
+                deleteText.addEventListener("click", function () {
+                    $("#clickModal").modal('hide');
+                    get_event_id.remove()
+
+                });
+
+                deleteImage.addEventListener("click", function () {
+                    $("#clickModal").modal('hide');
+                    get_event_id.remove()
+
+                });
+            }
 
 
         }
@@ -461,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const eventToRemovea = events.find(event => event.extendedProps.eventIdA === event_id_a);
                             eventToRemovea.remove()
                             var eventData = {
-                                id: response.event_id,
+                                id: response.event_id_a,
                                 title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
                                 start: response.time1ISO,
                                 borderColor: "black",
@@ -479,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const eventToRemoveb = events.find(event => event.extendedProps.eventIdB === event_id_b);
                             eventToRemoveb.remove();
                             var eventDatab = {
-                                id: response.event_id,
+                                id: response.event_id_b,
                                 title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
                                 start: response.time2ISO,
                                 borderColor: "black",
@@ -496,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const eventToRemovec = events.find(event => event.extendedProps.eventIdC === event_id_c);
                             eventToRemovec.remove();
                             var eventDatac = {
-                                id: response.event_id,
+                                id: response.event_id_c,
                                 title: response.patient_name + ' ' + response.family_name + ' ' + 'Unconfirmed',
                                 start: response.time3ISO,
                                 borderColor: "black",
