@@ -205,13 +205,13 @@ def book_appointment():
 @main.route('/resize_appointment', methods=['GET', 'POST'])
 def resize_appointment():
     if request.method == 'POST':
-        date = request.form.get('date')
-        name = request.form.get('first-name')
-        family = request.form.get('family-name')
+        date = request.form.get('date-edit')
+        name = request.form.get('first-name-edit')
+        family = request.form.get('family-name-edit')
         eventID = request.form.get('event_id')
-        start_time = request.form.get('start-time')
-        phone = request.form.get('phone')
-        end_time = request.form.get('end-time')
+        start_time = request.form.get('start-time-edit')
+        phone = request.form.get('phone-edit')
+        end_time = request.form.get('end-time-edit')
         constructed_start_time = date + "T" + start_time + ":00+03:00"
         constructed_end_time = date + "T" + end_time + ":00+03:00"
         appointment_type = request.form.get('select-appointment-resize')
@@ -257,6 +257,7 @@ def resize_appointment():
 def suggested_appointments():
     if request.method == 'POST':
         event_id = request.form.get('original_event_id')
+        print("the event id for the suggested appointment is ",event_id)
         event_id_a = request.form.get('event_id_reminder1')
         event_id_b = request.form.get('event_id_reminder2')
         event_id_c = request.form.get('event_id_reminder3')
