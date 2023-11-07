@@ -257,9 +257,7 @@ def resize_appointment():
 def suggested_appointments():
     if request.method == 'POST':
         event_id = request.form.get('original_event_id')
-        print("the event id for the suggested appointment is ",event_id)
         event_id_a = request.form.get('event_id_reminder1')
-        print("the event id a",event_id_a)
         event_id_b = request.form.get('event_id_reminder2')
         print("the event id b",event_id_b)
         event_id_c = request.form.get('event_id_reminder3')
@@ -381,7 +379,7 @@ def suggested_appointments():
             print("the response is", response)
             return jsonify(response)
 
-    return render_template("book_appointment.html")
+
 
 
 @main.route('/emr', methods=['GET', 'POST'])

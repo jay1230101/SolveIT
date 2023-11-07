@@ -163,8 +163,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ,
         eventClick: function (info) {
             var event_id = info.event.id;
-            console.log("the evento ido ", event_id)
             var get_event_id = calendar.getEventById(event_id);
+            var event_id_a = info.event.extendedProps.encounter_id_a
+            var get_event_id_a = calendar.getEventById(event_id_a)
+            var event_id_b = info.event.extendedProps.encounter_id_b
+            var get_event_id_b = calendar.getEventById(event_id_b)
+            var event_id_c = info.event.extendedProps.encounter_id_c
+            var get_event_id_c = calendar.getEventById(event_id_c)
+
+            var draggableEventId = 'draggable-' + event_id;
+            var draggableElement = document.getElementById(draggableEventId)
+
 
             const rescheduleText = document.getElementById("rescheduling");
             const rescheduleImage = document.getElementById("rescheduling-img");
@@ -180,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     $("#clickModalDraggable").modal('hide');
                     get_event_id.remove();
 
-                    console.log("the update first three draggable are ", firstThreeDraggableEvents)
+
                 });
 
                 deleteImg.addEventListener("click", function (event) {
@@ -207,12 +216,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 deleteText.addEventListener("click", function () {
                     $("#clickModal").modal('hide');
                     get_event_id.remove()
+                    if (get_event_id_a) {
+                        get_event_id_a.remove();
+                    }
+                    if (get_event_id_b) {
+                        get_event_id_b.remove()
+                    }
+
+                    if (get_event_id_c) {
+                        get_event_id_c.remove()
+                    }
+                    if (draggableElement) {
+                        draggableElement.remove()
+                    }
+
 
                 });
 
                 deleteImage.addEventListener("click", function () {
                     $("#clickModal").modal('hide');
                     get_event_id.remove()
+                    if (get_event_id_a) {
+                        get_event_id_a.remove();
+                    }
+                    if (get_event_id_b) {
+                        get_event_id_b.remove()
+                    }
+
+                    if (get_event_id_c) {
+                        get_event_id_c.remove()
+                    }
+                    if (draggableElement) {
+                        draggableElement.remove()
+                    }
 
                 });
             }
@@ -436,10 +472,8 @@ document.addEventListener('DOMContentLoaded', function () {
 //SUBMIT FORMS
 //1-submit the booking form and add the external events
     const bookingForm = document.getElementById("booking-form");
-    const checkbox = document.getElementById('drop-remove');
     const externalEvents = document.getElementById("external-events");
-    var get_event_original_id;
-    var storedEvents = []
+
 
     bookingForm.onsubmit = function (event) {
         event.preventDefault();
@@ -465,7 +499,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         encounter_id_c: response.encounter_id_c
                     }
                 };
-                storedEvents.push(eventData)
 
 
                 // Create a new fcEventElement for each event
@@ -481,10 +514,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 fcEventElement.dataset.event_id_a = response.encounter_id_a;
                 fcEventElement.dataset.event_id_b = response.encounter_id_b;
                 fcEventElement.dataset.event_id_c = response.encounter_id_c;
+                fcEventElement.id = 'draggable-' + response.encounter_id
                 externalEvents.appendChild(fcEventElement);
 
-
-                get_event_original_id = response.encounter_id
 
                 new Draggable(fcEventElement, {
                     eventData: {
