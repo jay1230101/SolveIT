@@ -259,9 +259,13 @@ def suggested_appointments():
         event_id = request.form.get('original_event_id')
         print("the event id for the suggested appointment is ",event_id)
         event_id_a = request.form.get('event_id_reminder1')
+        print("the event id a",event_id_a)
         event_id_b = request.form.get('event_id_reminder2')
+        print("the event id b",event_id_b)
         event_id_c = request.form.get('event_id_reminder3')
+        print("the event c is",event_id_c)
         saveButton = request.form.get('button-clicked')
+        print("the save button value is",saveButton)
 
         sendPatientButton = request.form.get('submit-button')
 
@@ -301,7 +305,9 @@ def suggested_appointments():
         traffic_reminder = request.form.get("traffic_reminder")
 
 
+
         if (saveButton == "save-form" and event_id_a and not event_id_b and not event_id_c):
+            print("hello")
 
             suggested_appt = suggestedAppointments(
                 event_id=event_id,
@@ -353,6 +359,7 @@ def suggested_appointments():
             return jsonify(response)
 
         elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
+
             event = suggestedAppointments.query.filter_by(event_id=event_id).first()
             event.event_id_c = event_id_c,
             event.booking_reminder = booking_reminder,

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var draggableBox = [];
     const firstThreeDraggableEvents = []
     console.log("the first three draggables are ", firstThreeDraggableEvents)
+    console.log("the second three draggables are ", firstThreeDraggableEvents[0])
     console.log("the draggable box are ", draggableBox)
 
     console.log("the event label index", eventLabelIndex)
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         drop: function (info) {
             const encounterId = info.draggedEl.dataset.encounterId;
             console.log("the encounter id is ", encounterId)
+
 
             //get the modal demographic info
             const patientName = info.draggedEl.dataset.patientName;
@@ -62,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!draggableBox.includes(encounterId) || firstThreeDraggableEvents.filter(event => event.encounter_id === encounterId).length < 3) {
                 const encounterLabeledId = eventLabels[eventLabelIndex];
                 console.log("the encounter labeled id", encounterLabeledId);
+
+
                 const draggableEventDetails = {
                     encounter_id: encounterId,
                     encounter_labeled_id: encounterLabeledId,
@@ -72,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 draggableBox.push(encounterId);
                 firstThreeDraggableEvents.push(draggableEventDetails);
                 eventLabelIndex++;
+
 
                 //open the Modal
                 $("#reminderModal").modal('show')
@@ -85,15 +90,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 $('[name="original_event_id"]').val(encounterId);
 
                 if (encounterLabeledId === event_id_a) {
-                    reminderOption1()
+                    reminderOption1(encounterId)
                 } else if (encounterLabeledId === event_id_b) {
-                    reminderOption1()
-                    reminderOption2()
+                    reminderOption2(encounterId);
+
 
                 } else if (encounterLabeledId === event_id_c) {
-                    reminderOption1()
-                    reminderOption2()
-                    reminderOption3()
+                    reminderOption1(encounterId);
+                    reminderOption2(encounterId);
+                    reminderOption3(encounterId);
                 }
 
 
@@ -106,32 +111,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ,
-        select:
+        select: function (info) {
 
-            function (info) {
-
-                const calendarDate = info.start;
-                const dateISO = calendarDate.toISOString().slice(0, 10);
-                const startHour = info.start.getHours().toString().padStart(2, '0')
-                const startMin = info.start.getMinutes().toString().padStart(2, '0')
-                const startTime = startHour + ":" + startMin;
+            const calendarDate = info.start;
+            const dateISO = calendarDate.toISOString().slice(0, 10);
+            const startHour = info.start.getHours().toString().padStart(2, '0')
+            const startMin = info.start.getMinutes().toString().padStart(2, '0')
+            const startTime = startHour + ":" + startMin;
 
 
-                const endHour = info.end.getHours().toString().padStart(2, '0')
-                const endMin = info.end.getMinutes().toString().padStart(2, '0')
-                const endTime = endHour + ":" + endMin;
+            const endHour = info.end.getHours().toString().padStart(2, '0')
+            const endMin = info.end.getMinutes().toString().padStart(2, '0')
+            const endTime = endHour + ":" + endMin;
 
 
-                var startStr = info.startStr
-                var endStr = info.endStr
+            var startStr = info.startStr
+            var endStr = info.endStr
 
-                $('[name="hidden-start"]').val(startStr);
-                $('[name="hidden-end"]').val(endStr)
-                $('[name="date"]').val(dateISO);
-                $('[name="start-time"]').val(startTime);
-                $('[name="end-time"]').val(endTime);
-                $("#appointmentModal").modal('show');
-            }
+            $('[name="hidden-start"]').val(startStr);
+            $('[name="hidden-end"]').val(endStr)
+            $('[name="date"]').val(dateISO);
+            $('[name="start-time"]').val(startTime);
+            $('[name="end-time"]').val(endTime);
+            $("#appointmentModal").modal('show');
+        }
 
         ,
 
@@ -314,24 +317,121 @@ document.addEventListener('DOMContentLoaded', function () {
         $('[name="select-chief"]').val("")
     }
 
+
 //4- Add reminders input to Modal
-    function reminderOption1() {
-        $('[name="event_id_reminder1]').val(firstThreeDraggableEvents[0].encounter_labeled_id);
-        $('[name="date1"]').val(firstThreeDraggableEvents[0].date)
-        $('[name="time1"]').val(firstThreeDraggableEvents[0].startTime)
+    function getEncounterLabeledIdA(encounterId) {
+        const event = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes("-a"));
+        if (event) {
+            if (event.encounter_labeled_id.includes("-a")) {
+                return {
+                    encounter_labeled: event.encounter_labeled_id,
+                    date: event.date,
+                    time: event.startTime
+                }
+            }
+        }
     }
 
-    function reminderOption2() {
-        $('[name="event_id_reminder2"]').val(firstThreeDraggableEvents[1].encounter_labeled_id);
-        $('[name="date2"]').val(firstThreeDraggableEvents[1].date);
-        $('[name="time2"]').val(firstThreeDraggableEvents[1].startTime);
+    function getEncounterLabeledIdB(encounterId) {
+        const event = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes("-b"));
+        if (event) {
+            if (event.encounter_labeled_id.includes("-b")) {
+                return {
+                    encounter_labeled: event.encounter_labeled_id,
+                    date: event.date,
+                    time: event.startTime
+                }
+            }
+        }
+        console.log("THIS IS THE EVENT B", event)
     }
 
-    function reminderOption3() {
-        $('[name="event_id_reminder3"]').val(firstThreeDraggableEvents[2].encounter_labeled_id);
-        $('[name="date3"]').val(firstThreeDraggableEvents[2].date);
-        $('[name="time3"]').val(firstThreeDraggableEvents[2].startTime);
+    function getEncounterLabeledIdC(encounterId) {
+        const event = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes("-c"));
+        if (event) {
+            if (event.encounter_labeled_id.includes("-c")) {
+                return {
+                    encounter_labeled: event.encounter_labeled_id,
+                    date: event.date,
+                    time: event.startTime
+                }
+            }
+        }
     }
+
+    function reminderOption1(encounterId) {
+        const encounterLabeledId = getEncounterLabeledIdA(encounterId);
+        console.log("encounter labeled id for option 1", encounterLabeledId)
+
+        if (encounterLabeledId) {
+            $('[name="event_id_reminder1"]').val(encounterLabeledId.encounter_labeled);
+            console.log("event a", encounterLabeledId.encounter_labeled)
+            $('[name="date1"]').val(encounterLabeledId.date);
+            $('[name="time1"]').val(encounterLabeledId.time);
+        }
+    }
+
+    function reminderOption2(encounterId) {
+        const encounterLabeledId = getEncounterLabeledIdB(encounterId);
+        console.log("encounter labeled id for option 2", encounterLabeledId)
+        if (encounterLabeledId) {
+            const eventA = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes('-a'));
+            const eventB = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes('-b'));
+
+
+            $('[name="event_id_reminder1"]').val(eventA.encounter_labeled_id);
+            console.log("event a again", eventA.encounter_labeled_id)
+            $('[name="date1"]').val(eventA.date);
+            $('[name="time1"]').val(eventA.startTime);
+            $('[name="event_id_reminder2"]').val(eventB.encounter_labeled_id);
+            console.log("event b", eventB.encounter_labeled_id)
+            $('[name="date2"]').val(eventB.date);
+            $('[name="time2"]').val(eventB.startTime);
+        }
+    }
+
+    function reminderOption3(encounterId) {
+        const encounterLabeledId = getEncounterLabeledIdC(encounterId);
+        if (encounterLabeledId) {
+            const eventA = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes('-a'));
+            const eventB = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes('-b'));
+            const eventC = firstThreeDraggableEvents.find(event => event.encounter_id === encounterId && event.encounter_labeled_id.includes('-c'));
+
+
+            $('[name="event_id_reminder1"]').val(eventA.encounter_labeled_id);
+            console.log("event a again", eventA.encounter_labeled_id)
+            $('[name="date1"]').val(eventA.date);
+            $('[name="time1"]').val(eventA.startTime);
+            $('[name="event_id_reminder2"]').val(eventB.encounter_labeled_id);
+            console.log("event b", eventB.encounter_labeled_id)
+            $('[name="date2"]').val(eventB.date);
+            $('[name="time2"]').val(eventB.startTime);
+
+
+            $('[name="event_id_reminder3"]').val(eventC.encounter_labeled_id);
+            $('[name="date3"]').val(eventC.date);
+            $('[name="time3"]').val(eventC.startTime);
+        }
+
+
+    }
+
+
+//5- clear date adn times in reminder modal
+    function clearDateTime() {
+        $('[name="date1"]').val("");
+        $('[name="date2"]').val("");
+        $('[name="date3"]').val("");
+        $('[name="time1"]').val("");
+        $('[name="time2"]').val("");
+        $('[name="time3"]').val("");
+        $('[name="event_id_reminder1"]').val("");
+        $('[name="event_id_reminder2"]').val("");
+        $('[name="event_id_reminder3"]').val("");
+        //firstThreeDraggableEvents.length = 0;
+
+    }
+
 
 //SUBMIT FORMS
 //1-submit the booking form and add the external events
@@ -469,6 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     })
 
+
     reminderForm.onsubmit = function (event) {
         event.preventDefault();
         $.ajax({
@@ -503,6 +604,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }
                             };
                             var newEvent = calendar.addEvent(eventData);
+                            clearDateTime()
 
                         } else if (response.event_id_b) {
                             const event_id_b = response.event_id_b;
@@ -526,6 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }
                             };
                             var newEventb = calendar.addEvent(eventDatab);
+                            clearDateTime()
                         } else if (response.event_id_c) {
                             const event_id_c = response.event_id_c;
                             const eventToRemovec = events.find(event => event.extendedProps.eventIdC === event_id_c);
@@ -547,10 +650,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }
                             };
                             var newEventc = calendar.addEvent(eventDatac);
+                            clearDateTime()
+
                         }
 
                     }
                     $('#reminderModal').modal('hide')
+
                 }
             }
         )
