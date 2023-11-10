@@ -133,9 +133,12 @@ def book_appointment():
         father = request.form.get('fathers')
         phone = request.form.get('phone')
         date = request.form.get('date')
+        print("the original date", date)
         start_time = request.form.get('start-time')
-        hidden_start_time = request.form.get('hidden-start')
+        print("the start time is", start_time)
 
+        hidden_start_time = request.form.get('hidden-start')
+        print("the hidden start original", hidden_start_time)
         hidden_end_time = request.form.get('hidden-end')
 
         end_time = request.form.get('end-time')
@@ -254,8 +257,9 @@ def resize_appointment():
 def suggested_appointments():
     if request.method == 'POST':
         event_id = request.form.get('original_event_id')
+        print("the event id for the suggested appointment is ",event_id)
         event_id_a = request.form.get('event_id_reminder1')
-        print("the event id a ",event_id_a)
+        print("the event id a",event_id_a)
         event_id_b = request.form.get('event_id_reminder2')
         print("the event id b",event_id_b)
         event_id_c = request.form.get('event_id_reminder3')
@@ -263,7 +267,7 @@ def suggested_appointments():
         saveButton = request.form.get('button-clicked')
         print("the save button value is",saveButton)
 
-        sendPatientButton = request.form.get('submit-patient')
+        sendPatientButton = request.form.get('submit-button')
 
         booking_encounter = bookingEncounter.query.filter_by(id=event_id).first()
         patient_name = booking_encounter.patient_name
@@ -300,75 +304,84 @@ def suggested_appointments():
         weather_reminder = request.form.get("weather_reminder")
         traffic_reminder = request.form.get("traffic_reminder")
 
-        def create_response(event_id,patient_name,family_name,event_id_x,constructed_time_x):
-            response={
-                'event_id':event_id,
-                'patient_name':patient_name,
-                'family_name':family_name,
-                f'{event_id_x}':event_id_x,
-                f'{constructed_time_x}':constructed_time_x
 
+
+        if (saveButton == "save-form" and event_id_a and not event_id_b and not event_id_c):
+            print("hello")
+
+            suggested_appt = suggestedAppointments(
+                event_id=event_id,
+                event_id_a=event_id_a,
+                event_id_b=event_id_b,
+                event_id_c=event_id_c,
+                booking_reminder=booking_reminder,
+                appointment_reminder=appointment_reminder,
+                weather_reminder=weather_reminder,
+                traffic_reminder=traffic_reminder,
+                date1=date1,
+                time1=time1,
+                date2=date2,
+                time2=time2,
+                date3=date3,
+                time3=time3
+            )
+            db.session.add(suggested_appt)
+            db.session.commit()
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_a': event_id_a,
+                'time1ISO': constructed_time1
             }
+            print("the first response", response)
             return jsonify(response)
 
-        print("hello")
-        if (sendPatientButton  == "submit-patient"):
-            print("mico")
-            if event_id_a and not event_id_b and not event_id_c:
-                suggested_appt = suggestedAppointments(
-                    event_id=event_id,
-                    event_id_a=event_id_a,
-                    event_id_b=event_id_b,
-                    event_id_c=event_id_c,
-                    booking_reminder=booking_reminder,
-                    appointment_reminder=appointment_reminder,
-                    weather_reminder=weather_reminder,
-                    traffic_reminder=traffic_reminder,
-                    date1=date1,
-                    time1=time1,
-                    date2=date2,
-                    time2=time2,
-                    date3=date3,
-                    time3=time3
-                )
-                db.session.add(suggested_appt)
-                db.session.commit()
-                return create_response(event_id, patient_name, family_name, event_id_a, constructed_time1)
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and not event_id_c):
+            event = suggestedAppointments.query.filter_by(event_id=event_id).first()
+            event.event_id_b = event_id_b,
+            event.booking_reminder = booking_reminder,
+            event.appointment_reminder = appointment_reminder,
+            event.weather_reminder = weather_reminder,
+            event.traffic_reminder = traffic_reminder,
+            event.date2 = date2,
+            event.time2 = time2
 
-            elif event_id_a and event_id_b and not event_id_c:
-                event = suggestedAppointments.query.filter_by(event_id=event_id).first()
-                event.event_id_b = event_id_b,
-                event.booking_reminder = booking_reminder,
-                event.appointment_reminder = appointment_reminder,
-                event.weather_reminder = weather_reminder,
-                event.traffic_reminder = traffic_reminder,
-                event.date2 = date2,
-                event.time2 = time2
+            db.session.commit()
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_b': event_id_b,
+                'time2ISO': constructed_time2
+            }
+            print("the response is", response)
+            return jsonify(response)
 
-                db.session.commit()
-                return create_response(event_id, patient_name, family_name, event_id_b, constructed_time2)
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
 
-            elif event_id_a and event_id_b and event_id_c:
-                event = suggestedAppointments.query.filter_by(event_id=event_id).first()
-                event.event_id_c = event_id_c,
-                event.booking_reminder = booking_reminder,
-                event.appointment_reminder = appointment_reminder,
-                event.weather_reminder = weather_reminder,
-                event.traffic_reminder = traffic_reminder,
-                event.date3 = date3,
-                event.time3 = time3
+            event = suggestedAppointments.query.filter_by(event_id=event_id).first()
+            event.event_id_c = event_id_c,
+            event.booking_reminder = booking_reminder,
+            event.appointment_reminder = appointment_reminder,
+            event.weather_reminder = weather_reminder,
+            event.traffic_reminder = traffic_reminder,
+            event.date3 = date3,
+            event.time3 = time3
 
-                db.session.commit()
-                return create_response(event_id, patient_name, family_name, event_id_c, constructed_time3)
+            db.session.commit()
 
-        if (saveButton == "save-form"):
-            if(event_id_a and not event_id_b and not event_id_c):
-                return create_response(event_id, patient_name, family_name, event_id_a, constructed_time1)
-            elif event_id_a and event_id_b and not event_id_c:
-                return create_response(event_id, patient_name, family_name, event_id_b, constructed_time2)
-            elif event_id_a and event_id_b and event_id_c:
-                return create_response(event_id, patient_name, family_name, event_id_c, constructed_time3)
+            response = {
+                'event_id': event_id,
+                'patient_name': patient_name,
+                'family_name': family_name,
+                'event_id_c': event_id_c,
+                'time3ISO': constructed_time3
+            }
+            print("the response is", response)
+            return jsonify(response)
 
+    return render_template("book_appointment.html")
 
 
 @main.route('/emr', methods=['GET', 'POST'])
