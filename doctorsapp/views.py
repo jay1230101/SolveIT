@@ -92,6 +92,7 @@ def register_patient():
         family = request.form.get('family')
         family = family.capitalize()
         dob = request.form.get('dob')
+        print("the dob is ",dob)
         gender = request.form.get('gender')
         phone = request.form.get('phone')
         email = request.form.get('email')
@@ -132,13 +133,12 @@ def book_appointment():
         family = family.capitalize()
         father = request.form.get('fathers')
         phone = request.form.get('phone')
+        freeText=request.form.get('free-text')
         date = request.form.get('date')
-        print("the original date", date)
         start_time = request.form.get('start-time')
-        print("the start time is", start_time)
 
         hidden_start_time = request.form.get('hidden-start')
-        print("the hidden start original", hidden_start_time)
+
         hidden_end_time = request.form.get('hidden-end')
 
         end_time = request.form.get('end-time')
@@ -157,6 +157,25 @@ def book_appointment():
         doctor_name = doctor_instance.name
         doctor_family = doctor_instance.family
         fullDoctorName = doctor_name + "" + doctor_family
+
+        # get the dob of the patient and other params
+        dob_instance=patientRegistrationInfo.query.filter(
+            and_(
+                phone==phone,
+                name==name,
+            )
+        ).first()
+        dob_attr=dob_instance.dob.strftime("%Y-%m-%d")
+        patient_dob_formated = datetime.strptime(dob_attr, "%Y-%m-%d").strftime("%d %B %Y")
+        session['dob']=patient_dob_formated
+
+
+
+        session['patientName']=name
+        session['familyName']=family
+        session['phone']=phone
+
+
 
         new_encounter = bookingEncounter(
             date=date,
@@ -193,10 +212,11 @@ def book_appointment():
             'encounter_id_c': str(encounter_id) + '-' + 'c',
             'phone': phone,
             'appointment': appointment_type,
-            'treating_physician': fullDoctorName
+            'treating_physician': fullDoctorName,
+            'free_text':freeText
+
 
         }
-        print("the response is", response)
         return jsonify(response)
 
     return render_template("book_appointment.html")
@@ -244,7 +264,6 @@ def resize_appointment():
                 'phone': phone,
                 'appointment': appointment_type
             }
-            print("this is the resize response", response)
             return jsonify(response)
         else:
             flash("Event encounter not found")
@@ -257,58 +276,52 @@ def resize_appointment():
 def suggested_appointments():
     if request.method == 'POST':
         event_id = request.form.get('original_event_id')
-        print("the event id for the suggested appointment is ",event_id)
         event_id_a = request.form.get('event_id_reminder1')
-        print("the event id a",event_id_a)
         event_id_b = request.form.get('event_id_reminder2')
-        print("the event id b",event_id_b)
         event_id_c = request.form.get('event_id_reminder3')
-        print("the event c is",event_id_c)
         saveButton = request.form.get('button-clicked')
-        print("the save button value is",saveButton)
 
-        sendPatientButton = request.form.get('submit-button')
+        sendPatientButton = request.form.get('submit-patient')
 
         booking_encounter = bookingEncounter.query.filter_by(id=event_id).first()
         patient_name = booking_encounter.patient_name
         family_name = booking_encounter.patient_family_name
+        # date1 is for the reminder Modal format
         date1 = request.form.get("date1")
+        # time1 is for the reminder Modal format
         time1 = request.form.get("time1")
+        # constructed time1 is for the calendar format
         constructed_time1 = date1 + "T" + time1 + ":00+03:00"
-
 
         date2 = request.form.get("date2")
         if not date2:
             date2 = None
         time2 = request.form.get("time2")
+
         constructed_time2 = None
         if not time2:
             time2 = None
         else:
             constructed_time2 = date2 + "T" + time2 + ":00+03:00"
 
-
         date3 = request.form.get("date3")
+
         if not date3:
             date3 = None
         time3 = request.form.get("time3")
+
         constructed_time3 = None
         if not time3:
             time3 = None
         else:
             constructed_time3 = date3 + "T" + time3 + ":00+03:00"
 
-
         booking_reminder = request.form.get("booking_reminder")
         appointment_reminder = request.form.get("appointment_reminder")
         weather_reminder = request.form.get("weather_reminder")
         traffic_reminder = request.form.get("traffic_reminder")
 
-
-
-        if (saveButton == "save-form" and event_id_a and not event_id_b and not event_id_c):
-            print("hello")
-
+        def saveReminderA():
             suggested_appt = suggestedAppointments(
                 event_id=event_id,
                 event_id_a=event_id_a,
@@ -323,7 +336,8 @@ def suggested_appointments():
                 date2=date2,
                 time2=time2,
                 date3=date3,
-                time3=time3
+                time3=time3,
+
             )
             db.session.add(suggested_appt)
             db.session.commit()
@@ -332,12 +346,14 @@ def suggested_appointments():
                 'patient_name': patient_name,
                 'family_name': family_name,
                 'event_id_a': event_id_a,
-                'time1ISO': constructed_time1
+                'time1ISO': constructed_time1,
+                'date1': date1,
+                'time1': time1,
+                'message':'Your Message is Sent Successfully'
             }
-            print("the first response", response)
             return jsonify(response)
 
-        elif (saveButton == 'save-form' and event_id_a and event_id_b and not event_id_c):
+        def saveReminderB():
             event = suggestedAppointments.query.filter_by(event_id=event_id).first()
             event.event_id_b = event_id_b,
             event.booking_reminder = booking_reminder,
@@ -353,13 +369,15 @@ def suggested_appointments():
                 'patient_name': patient_name,
                 'family_name': family_name,
                 'event_id_b': event_id_b,
-                'time2ISO': constructed_time2
+                'time2ISO': constructed_time2,
+                'date1': date1,
+                'time1': time1,
+                'date2': date2,
+                'time2': time2
             }
-            print("the response is", response)
             return jsonify(response)
 
-        elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
-
+        def saveReminderC():
             event = suggestedAppointments.query.filter_by(event_id=event_id).first()
             event.event_id_c = event_id_c,
             event.booking_reminder = booking_reminder,
@@ -378,15 +396,39 @@ def suggested_appointments():
                 'event_id_c': event_id_c,
                 'time3ISO': constructed_time3
             }
-            print("the response is", response)
             return jsonify(response)
 
-    return render_template("book_appointment.html")
+        if (saveButton == "save-form" and event_id_a and not event_id_b and not event_id_c):
+            return saveReminderA()
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and not event_id_c):
+            return saveReminderB()
+        elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
+            return saveReminderC()
+
+
+        if(sendPatientButton =='submit-patient' and event_id_a and not event_id_b and not event_id_c):
+            return saveReminderA()
+            # send an email to the patient
+        elif(sendPatientButton =='submit-patient' and event_id_a and event_id_b and not event_id_c):
+            return saveReminderB()
+            # send an email to the patient
+        elif (sendPatientButton=='submit-patient' and event_id_a and event_id_b and event_id_c):
+            return saveReminderC()
+            # send an email to the patient
+
+
 
 
 @main.route('/emr', methods=['GET', 'POST'])
 def emr():
-    return render_template("emr.html")
+    patient_dob=session.get('dob')
+    patient_name=session.get('patientName')
+    family_name=session.get('familyName')
+    phone=session.get('phone')
+
+    return render_template("emr.html",dob=patient_dob,name=patient_name,family=family_name,phone=phone)
+
+
 
 
 @main.route('/search_patient', methods=['GET', 'POST'])
