@@ -3,8 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+
+
 </head>
 <body>
-<h1>hello</h1>
+{% include "bootstrap.html" %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <a class="navbar-brand" href="{{ url_for('main.features') }}"><i class="fas fa-house"></i></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link">{{ name }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">{{ family }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">{{ dob }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">{{ phone }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" id="complete-form">
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                    aria-controls="panelsStayOpen-collapseOne">
+                                Current & Past Medical History
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                            <div class="accordion-body ">
+                                <div class="custom-input">
+                                <textarea class="form-control" required rows="4">
+
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseTwo">
+                                Physical Examination
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                            <div class="accordion-body ">
+                                <div class="custom-input">
+                                <textarea class="form-control" name="physical-exam" rows="4" required>
+                                </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="post" id="lab-form">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
+                                        aria-controls="panelsStayOpen-collapseThree">
+                                    Lab
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Center A</th>
+                                            <th>Center B</th>
+                                            <th>Center C</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>CBC</td>
+                                            <td>USD100</td>
+                                            <td>USD200</td>
+                                            <td>USD300</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>ESR</td>
+                                            <td>USD75</td>
+                                            <td>USD200</td>
+                                            <td>USD300</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>TSH</td>
+                                            <td>USD45</td>
+                                            <td>USD100</td>
+                                            <td>USD200</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td></td>
+
+                                            <td><a href="#">USD 500</a></td>
+                                            <td><a href="#">USD 600</a></td>
+                                            <td><a href="#">USD 700</a></td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form method="post" id="drug-form">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false"
+                                        aria-controls="panelsStayOpen-collapseFour">
+                                    Prescription
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Price</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Panadol</td>
+                                            <td>USD100</td>
+
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Augmentin</td>
+                                            <td>USD75</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Motilium</td>
+                                            <td>USD45</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td></td>
+                                            <td>USD 400</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Send to</b></td>
+                                            <td></td>
+
+                                            <td>
+                                                <select name="select-pharmacy" class="custom-select">
+                                                    <option selected readonly>Select Pharmacy</option>
+                                                    <option value="mazen">Mazen</option>
+                                                    <option value="panacea">Panacea</option>
+                                                    <option value="mashmoushi">Mashmoushi</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form method="post" id="radiology-form">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false"
+                                        aria-controls="panelsStayOpen-collapseFive">
+                                    Radiology
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Center A</th>
+                                            <th>Center B</th>
+                                            <th>Center C</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>CXR</td>
+                                            <td>USD100</td>
+                                            <td>USD200</td>
+                                            <td>USD300</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Ct-Chest</td>
+                                            <td>USD75</td>
+                                            <td>USD200</td>
+                                            <td>USD300</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>MRI-Brain</td>
+                                            <td>USD45</td>
+                                            <td>USD100</td>
+                                            <td>USD200</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total</b></td>
+                                            <td></td>
+
+                                            <td><a href="#">USD 500</a></td>
+                                            <td><a href="#">USD 600</a></td>
+                                            <td><a href="#">USD 700</a></td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
