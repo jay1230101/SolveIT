@@ -47,7 +47,9 @@
 </div>
 
 <div id='calendar-container'>
+
     <div id='calendar'></div>
+
 </div>
 
 
@@ -113,6 +115,7 @@
                                 <option value="consultation">Consultation</option>
                                 <option value="follow_up">Follow up</option>
                                 <option value="procedure">Procedure</option>
+                                <option value="others">Others</option>
                             </select>
                         </div>
                         <div class="col-md-3 form-group">
@@ -183,20 +186,44 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                <div class="modal-header d-flex justify-content-end">
+                    <button style="margin-right: 30px" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
                     <button name="submit-button" type="submit" class="btn btn-primary">Save changes</button>
                 </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><b>Or Block a Slot</b></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-lg-3">
+                            <input name="free-text" type="text" class="form-control me-2" style="width: 150px"
+                                   id="free-text"
+                                   autocomplete="off" placeholder="Conference / Lunch ...">
+                        </div>
+                        <div class="col-md-4 col-lg-3">
+                            <button name="block-slot" class="btn btn-light" style="border-color: green;text-align: left"
+                                    type="submit">
+                                Add Event
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-lg-3">
+
+                        </div>
+                        <div class="col-md-2 col-lg-3">
+
+                        </div>
+
+                    </div>
+                </div>
+
+
             </form>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
         </div>
     </div>
 </div>
@@ -290,7 +317,8 @@
                             </select>
                         </div>
                         <div class="col-md-9 form-group">
-                            <label class="book-appointment-font" style="display: flex;justify-content: center">Reminders
+                            <label class="book-appointment-font"
+                                   style="display: flex;justify-content: center">Reminders
                                 & Instructions</label>
                             <div class="row">
                                 <div class="col-md-3">
@@ -318,11 +346,13 @@
                                 <div class="col-md-6">
                                     <div style="display: none" id="prior-reminder-resize">
                                         <input type="checkbox" name="prior_procedure_reminder">
-                                        <label id="prior-reminder-label-resize" for="prior_procedure_reminder"></label>
+                                        <label id="prior-reminder-label-resize"
+                                               for="prior_procedure_reminder"></label>
                                     </div>
                                     <div style="display: none" id="post-reminder-resize">
                                         <input type="checkbox" name="post_procedure_reminder">
-                                        <label id="post-reminder-label-resize" for="post_procedure_reminder"></label>
+                                        <label id="post-reminder-label-resize"
+                                               for="post_procedure_reminder"></label>
                                     </div>
                                 </div>
                             </div>
@@ -331,7 +361,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="close-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                    <button id="close-button" type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Close
                     </button>
                     <button name="submit-button" type="submit" class="btn btn-primary">Save changes</button>
                 </div>
@@ -361,7 +392,8 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <img id="rescheduling-img" class="book-appointment-icon" src="../static/calendar.png"
+                            <img id="rescheduling-img" class="book-appointment-icon"
+                                 src="../static/calendar.png"
                                  alt="Calendar Icon" style="margin-right: 10px">
                             <span id="rescheduling" class="align-middle">Reschedule</span>
                         </div>
@@ -396,7 +428,8 @@
                     <div class="row">
                         <div class="col-md-4"></div>
                         <div class="col-md-4">
-                            <img id="delete-img-draggable" class="book-appointment-icon" src="../static/delete.png"
+                            <img id="delete-img-draggable" class="book-appointment-icon"
+                                 src="../static/delete.png"
                                  alt="Calendar Icon" style="margin-right: 10px">
                             <span id="deleting-draggable" class="align-middle">Delete Event</span>
                         </div>
@@ -413,13 +446,11 @@
 </div>
 
 {#Reminder Modal #}
-<div id="reminderModal" class="modal" tabindex="-1">
+<div id="reminderModal" class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-scroll="true">
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
                 <p class="modal-title">Reminder Appointment</p>
-                <button id="close-sign-reminder" type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
             </div>
             <form id="reminder-form">
                 <div class="modal-body">
@@ -491,7 +522,8 @@
 
                     <div class="row">
                         <div class="col-md-12 form-group">
-                            <label class="book-appointment-font" style="display: flex;justify-content: center">Reminders
+                            <label class="book-appointment-font"
+                                   style="display: flex;justify-content: center">Reminders
                                 & Instructions</label>
                             <div class="row">
                                 <div class="col-md-6">
@@ -521,22 +553,24 @@
                     </div>
 
                 </div>
+
+
                 <div class="modal-footer">
-                    <button id="close-button-reminder" type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button name="submit-button" type="submit" class="btn btn-secondary" value="submit-patient">
-                        suggest to Patient
-                    </button>
-                    <button name="save-changes" type="submit" class="btn btn-secondary" value="save-form">Save
+                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal"
+                            name="close-button"
+                            value="save-form">Close
                     </button>
 
+                    <button style="margin-left: 200px;border-color: green" name="save-changes" type="submit"
+                            class="btn btn-light">Save
+                    </button>
+                    <button name="suggest-patient" type="submit" class="btn btn-primary">
+                        suggest to Patient
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 </body>
 </html>
