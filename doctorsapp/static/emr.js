@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector('[name="search-patient-input"]');
     const searchResults = document.getElementById("search-results");
-
-
     const searchForm = document.querySelector('.search-form');
     const patientName = document.getElementById("patient-name");
     const famName = document.getElementById("fam-name");
@@ -49,37 +47,45 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputCode = document.querySelector('[name="search-code"]');
     const searchF = document.querySelector('.search-diagnostics');
     const tableBody = document.querySelector("tbody");
-    const codingModal = document.querySelector('.coding-modal');
+    let data = [];
 
     searchF.addEventListener("submit", async (event) => {
         event.preventDefault();
         const searchQueryCode = inputCode.value;
         const response = await fetch(`/search_proc?query=${searchQueryCode}`);
-        const data = await response.json();
-        if (data.length > 0) {
-            data.forEach(code => {
+        const newRowsData = await response.json();
 
-                const newRow = document.createElement('tr');
-                newRow.classList.add('new-row-class');
-                newRow.innerHTML = ` 
- 
-             <td class="charge-code">${code.code}</td>
+
+        if (newRowsData.length > 0) {
+            newRowsData.forEach((code) => {
+                const existsInData = data.some((existingRow) => existingRow.code === code.code);
+                if (!existsInData) {
+                    data.push(code);
+                    console.log("DATA", data);
+                    const newRow = document.createElement('tr');
+                    newRow.classList.add('new-row-class');
+                    newRow.innerHTML = ` 
+                             <td class="charge-code">${code.code}</td>
              <td class="description-c" style="text-align: center">${code.description}</td>
              <td class="priceA-c" style="text-align: center">${code.priceA}</td>
              <td class="priceB-c" style="text-align: center">${code.priceB}</td>
              <td class="priceC-c" style="text-align: center">${code.priceC}</td>
+             <td class="nssf-reimb" style="text-align: center">${code.nssfReimb}</td>
              <td style="text-align: center"><i class="fas fa-trash-alt"></i></td>
             
              `;
 
-                const lastChargeCodeRow = tableBody.querySelector('#last-charge-code-row')
-                tableBody.insertBefore(newRow, lastChargeCodeRow.previousSibling);
+                    const lastChargeCodeRow = tableBody.querySelector('#last-charge-code-row')
+                    tableBody.insertBefore(newRow, lastChargeCodeRow.previousSibling);
 
-                newRow.querySelector('.fa-trash-alt').addEventListener("click", () => {
-                    newRow.remove()
-                })
-
-
+                    newRow.querySelector('.fa-trash-alt').addEventListener("click", () => {
+                        newRow.remove();
+                        const index = data.indexOf(code);
+                        if (index !== -1) {
+                            data.splice(index, 1);
+                        }
+                    })
+                }
             })
             inputCode.value = ''
         } else {
@@ -143,62 +149,150 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
+    //set time out function
+    function setTimeOut() {
+        successMessage.style.display = 'block';
+        setTimeout(function () {
+            successMessage.style.display = 'none'
+        }, 3000)
+    }
+
     //if you click on center A
     const centerA = document.getElementById('centerA_Prices');
-    const hiddenA = document.querySelector('[name="centerA"]');
-    const tableB = document.querySelector('.search-diagnostics tbody')
-
-
+    const lastChargeCodeRow = tableBody.querySelector('#last-charge-code-row');
+    const successMessage = document.getElementById("success-message");
     centerA.addEventListener("click", function (event) {
-        hiddenA.value = 'centerA';
-        event.preventDefault();
-        submitChargeCode();
-        $.ajax({
-            type: 'POST',
-            url: '/emr',
-            data: JSON.stringify({hiddenA: hiddenA.value, data: data}),
-            contentType: 'application/json',
-            success: function () {
-                const rowsToRemove = document.querySelectorAll('.search-diagnostics tbody tr:not(:first-child)');
-                rowsToRemove.forEach(row => {
-                    tableBody.removeChild(row);
-                });
-
-            }
-
-        })
+        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
+        const hiddenA = document.querySelector('[name="centerA"]');
+        const patientName = document.getElementById("patient-name");
+        if (patientName.innerHTML !== '') {
+            hiddenA.value = 'centerA';
+            event.preventDefault();
+            submitChargeCode();
+            $.ajax({
+                type: 'POST',
+                url: '/emr',
+                data: JSON.stringify({hiddenA: hiddenA.value, data: data}),
+                contentType: 'application/json',
+                success: function () {
+                    rowsToRemove.forEach(row => {
+                        if (row !== lastChargeCodeRow) {
+                            row.remove();
+                        }
+                    });
+                    setTimeOut()
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error(errorThrown)
+                }
+            })
+        } else {
+            alert("Please select the patient name")
+        }
 
     });
 
     // if you click on center B
     const centerB = document.getElementById('centerB_Prices');
-    const hiddenB = document.querySelector('[name="centerB"]');
     centerB.addEventListener("click", function (event) {
-        hiddenB.value = 'centerB';
-        event.preventDefault();
-        submitChargeCode();
-        $.ajax({
-            type: 'POST',
-            url: '/emr',
-            data: JSON.stringify({hiddenB: hiddenB.value, data: data}),
-            contentType: 'application/json'
-        })
+        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
+        const hiddenB = document.querySelector('[name="centerB"]');
+        const patientName = document.getElementById("patient-name");
+        if (patientName.innerHTML !== '') {
+            hiddenB.value = 'centerB';
+            event.preventDefault();
+            submitChargeCode();
+            $.ajax({
+                type: 'POST',
+                url: '/emr',
+                data: JSON.stringify({hiddenB: hiddenB.value, data: data}),
+                contentType: 'application/json',
+                success: function () {
+                    rowsToRemove.forEach(row => {
+                        if (row !== lastChargeCodeRow) {
+                            row.remove()
+                        }
+                    });
+                    setTimeOut()
+                }
+            })
+        } else {
+            alert("Please select patient name")
+        }
+
     });
 
     // if you click on center C
     const centerC = document.getElementById('centerC_Prices');
-    const hiddenC = document.querySelector('[name="centerC"]');
     centerC.addEventListener("click", function (event) {
-        hiddenC.value = 'centerC';
-        event.preventDefault();
-        submitChargeCode();
-        $.ajax({
-            type: 'POST',
-            url: '/emr',
-            data: JSON.stringify({hiddenC: hiddenC.value, data: data}),
-            contentType: 'application/json'
-        })
+        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
+        const hiddenC = document.querySelector('[name="centerC"]');
+        const patientName = document.getElementById("patient-name");
+        if (patientName.innerHTML !== '') {
+            hiddenC.value = 'centerC';
+            event.preventDefault();
+            submitChargeCode();
+            $.ajax({
+                type: 'POST',
+                url: '/emr',
+                data: JSON.stringify({hiddenC: hiddenC.value, data: data}),
+                contentType: 'application/json',
+                success: function () {
+                    rowsToRemove.forEach(row => {
+                        if (row !== lastChargeCodeRow) {
+                            row.remove()
+                        }
+                    });
+                    setTimeOut()
+                }
+            })
+        } else {
+            alert("Please select the patient name")
+        }
     });
+
+    //if you click on print button
+    const printButton = document.getElementById("print-button");
+    const patHeader = document.getElementById("pat");
+    const famHeader = document.getElementById("fam");
+    const dobHeader = document.getElementById('doby');
+    const phoneHeader = document.getElementById('phony');
+    const orderTableBody = document.getElementById('order-table-body');
+
+    printButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (patientName.innerHTML !== '') {
+            $('#print-modal').modal('show');
+            patHeader.textContent = patientName.innerHTML;
+            famHeader.textContent = famName.innerHTML;
+            dobHeader.textContent = dob.innerHTML;
+            phoneHeader.textContent = phoneN.innerHTML;
+
+            const printedData = []
+            while (orderTableBody.firstChild) {
+                orderTableBody.removeChild(orderTableBody.firstChild);
+            }
+
+            data.forEach(code => {
+                const existsInPrintedData = printedData.some((existingRow) => existingRow.code === code.code);
+                if (!existsInPrintedData) {
+                    printedData.push(code);
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+    <td class="charge-co">${code.code}</td>
+    <td class="description-co">${code.description}</td>
+    <td class="nssf-reim">${code.nssfReimb}</td>
+`;
+                    orderTableBody.appendChild(newRow);
+
+                }
+            });
+
+        } else {
+            alert("Please select a patient name")
+        }
+    })
 
 })
 
