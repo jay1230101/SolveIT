@@ -8,41 +8,67 @@ document.addEventListener("DOMContentLoaded", function () {
     const dob = document.getElementById("dob")
 
     searchForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const query = searchInput.value;
-        console.log("query", query)
-        const response = await fetch(`/search_patient?query=${query}`);
-        const data = await response.json();
+        if (searchInput.value !== '') {
 
-        searchResults.innerHTML = '';
+            event.preventDefault();
+            const query = searchInput.value;
+            const response = await fetch(`/search_patient?query=${query}`);
+            const data = await response.json();
 
-        if (data.length > 0) {
-            data.forEach(patient => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('list-group-item');
-                listItem.style.width = '200px';
-                listItem.textContent = patient.name + ' ' + patient.father + ' ' + patient.family;
+            searchResults.innerHTML = '';
 
-                listItem.addEventListener("click", () => {
-                    searchInput.value = '';
-                    patientName.innerHTML = patient.name;
-                    famName.innerHTML = patient.family;
-                    phoneN.innerHTML = patient.phone;
-                    dob.innerHTML = patient.dob;
+            if (data.length > 0) {
+                data.forEach(patient => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item');
+                    listItem.style.backgroundColor = "#f8f9fa";
 
-                    searchResults.innerHTML = ''
-                });
-                searchResults.appendChild(listItem)
-            })
+                    listItem.textContent = patient.name + ' ' + patient.father + ' ' + patient.family;
+
+                    listItem.addEventListener("click", () => {
+                        searchInput.value = '';
+                        patientName.innerHTML = patient.name;
+                        famName.innerHTML = patient.family;
+                        phoneN.innerHTML = patient.phone;
+                        dob.innerHTML = patient.dob;
+                        searchResults.innerHTML = '';
+
+                        sendPatientIdToServer(patient.id)
+
+                    });
+                    searchResults.appendChild(listItem)
+                })
+            } else {
+                const noresultItem = document.createElement('li');
+                noresultItem.classList.add('list-group-item', 'text-muted');
+                noresultItem.textContent = "No Matching patient found";
+                searchResults.append(noresultItem)
+            }
+
         } else {
-            const noresultItem = document.createElement('li');
-            noresultItem.classList.add('list-group-item', 'text-muted');
-            noresultItem.textContent = "No Matching patient found";
-            searchResults.append(noresultItem)
+            alert("please select a patient name")
         }
 
 
     });
+
+    //function to send patient.id to server
+    async function sendPatientIdToServer(patientId){
+        const url = `/emr?patient_id=${patientId}`;
+        try {
+            const response = await fetch(url, {
+                method:'GET',
+            });
+            if(response.ok){
+
+            }else{
+                console.error("Failed to send patient Id")
+            }
+        } catch(error){
+            console.error('Error',error)
+        }
+    }
+
 //search for lab tests and radiology and add it to the diagnostics table
     const inputCode = document.querySelector('[name="search-code"]');
     const searchF = document.querySelector('.search-diagnostics');
@@ -61,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const existsInData = data.some((existingRow) => existingRow.code === code.code);
                 if (!existsInData) {
                     data.push(code);
-                    console.log("DATA", data);
                     const newRow = document.createElement('tr');
                     newRow.classList.add('new-row-class');
                     newRow.innerHTML = ` 
@@ -146,111 +171,20 @@ document.addEventListener("DOMContentLoaded", function () {
             famName: famName,
             phoneN: phoneN,
             dob: dob
-        }
+        };
+        return data
     }
 
 
     //set time out function
+    const successMessage = document.getElementById("success-message");
+
     function setTimeOut() {
         successMessage.style.display = 'block';
         setTimeout(function () {
             successMessage.style.display = 'none'
         }, 3000)
     }
-
-    //if you click on center A
-    const centerA = document.getElementById('centerA_Prices');
-    const lastChargeCodeRow = tableBody.querySelector('#last-charge-code-row');
-    const successMessage = document.getElementById("success-message");
-    centerA.addEventListener("click", function (event) {
-        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
-        const hiddenA = document.querySelector('[name="centerA"]');
-        const patientName = document.getElementById("patient-name");
-        if (patientName.innerHTML !== '') {
-            hiddenA.value = 'centerA';
-            event.preventDefault();
-            submitChargeCode();
-            $.ajax({
-                type: 'POST',
-                url: '/emr',
-                data: JSON.stringify({hiddenA: hiddenA.value, data: data}),
-                contentType: 'application/json',
-                success: function () {
-                    rowsToRemove.forEach(row => {
-                        if (row !== lastChargeCodeRow) {
-                            row.remove();
-                        }
-                    });
-                    setTimeOut()
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.error(errorThrown)
-                }
-            })
-        } else {
-            alert("Please select the patient name")
-        }
-
-    });
-
-    // if you click on center B
-    const centerB = document.getElementById('centerB_Prices');
-    centerB.addEventListener("click", function (event) {
-        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
-        const hiddenB = document.querySelector('[name="centerB"]');
-        const patientName = document.getElementById("patient-name");
-        if (patientName.innerHTML !== '') {
-            hiddenB.value = 'centerB';
-            event.preventDefault();
-            submitChargeCode();
-            $.ajax({
-                type: 'POST',
-                url: '/emr',
-                data: JSON.stringify({hiddenB: hiddenB.value, data: data}),
-                contentType: 'application/json',
-                success: function () {
-                    rowsToRemove.forEach(row => {
-                        if (row !== lastChargeCodeRow) {
-                            row.remove()
-                        }
-                    });
-                    setTimeOut()
-                }
-            })
-        } else {
-            alert("Please select patient name")
-        }
-
-    });
-
-    // if you click on center C
-    const centerC = document.getElementById('centerC_Prices');
-    centerC.addEventListener("click", function (event) {
-        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
-        const hiddenC = document.querySelector('[name="centerC"]');
-        const patientName = document.getElementById("patient-name");
-        if (patientName.innerHTML !== '') {
-            hiddenC.value = 'centerC';
-            event.preventDefault();
-            submitChargeCode();
-            $.ajax({
-                type: 'POST',
-                url: '/emr',
-                data: JSON.stringify({hiddenC: hiddenC.value, data: data}),
-                contentType: 'application/json',
-                success: function () {
-                    rowsToRemove.forEach(row => {
-                        if (row !== lastChargeCodeRow) {
-                            row.remove()
-                        }
-                    });
-                    setTimeOut()
-                }
-            })
-        } else {
-            alert("Please select the patient name")
-        }
-    });
 
     //if you click on print button
     const printButton = document.getElementById("print-button");
@@ -292,7 +226,98 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             alert("Please select a patient name")
         }
+    });
+
+    //function to have fields mandatory before submitting the form
+    function validation() {
+        const medicalHistory = document.querySelector('[name="med-history"]');
+        const physicalExam = document.querySelector('[name="physical-exam"]');
+
+        return (
+            medicalHistory.value.trim() !== '' &&
+            physicalExam.value.trim() !== ''
+        )
+    };
+
+    //function to clear input fields after submittion
+    function clearInputFields() {
+        const medicalHistory = document.querySelector('[name="med-history"]');
+        const physicalExam = document.querySelector('[name="physical-exam"]');
+        const prescription = document.querySelector('[name="prescription"]');
+        medicalHistory.value = '';
+        physicalExam.value = '';
+        prescription.value = ''
+
+    }
+
+    //submit the medical form for all fields
+    const saveButton = document.getElementById("saveButton");
+    const medicalInfoForm = document.getElementById("medicalInfo");
+
+
+    saveButton.addEventListener("click", function (event) {
+        const lastChargeCodeRow = tableBody.querySelector('#last-charge-code-row');
+        const rowsToRemove = tableBody.querySelectorAll('tr:not(#last-charge-code-row)');
+        const pName = document.getElementById("patient-name");
+        if (pName.innerHTML !== '' && validation()) {
+            event.preventDefault();
+
+            const medicalInforFormData = new FormData(medicalInfoForm);
+            const chargeCodeData = submitChargeCode();
+
+            const formData = {
+                medicalInfo: Object.fromEntries(medicalInforFormData.entries()),
+                chargeCode: chargeCodeData,
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/emr',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function () {
+                    rowsToRemove.forEach(row => {
+                        if (row !== lastChargeCodeRow) {
+                            row.remove()
+                        }
+                    });
+                    setTimeOut()
+                    clearInputFields()
+                }
+            })
+        } else {
+            alert("Please fill in mandatory fields")
+        }
     })
+
+//movable modal in bootstrap
+    $(function () {
+        $('#history-modal .modal-dialog').draggable({
+            handle: ".modal-header"
+        });
+    });
+
+
+    //expandable div for previous visits
+    const plusSign = document.getElementById("plus-sign");
+    const clickableEvent = document.querySelectorAll(".clickable-event");
+    const medicalHistoryR = document.querySelector('[name="med-document"]');
+    const physicalExamR = document.querySelector('[name="exam-document"]');
+    const medicationsR = document.querySelector('[name="drug-document"]');
+    const diagnosticsR = document.querySelector('[name="diagnostic-history"]');
+
+    plusSign.addEventListener("click", function () {
+        console.log("hello")
+        $('#expandable-area').slideToggle();
+        console.log("johny")
+    });
+
+    clickableEvent.forEach(event => {
+        medicalHistoryR.textContent = event.getAttribute("data-med");
+        physicalExamR.textContent = event.getAttribute("data-exam");
+        medicationsR.textContent = event.getAttribute("data-prescription");
+        diagnosticsR.textContent = event.getAttribute("data-diagnostics")
+    })
+
 
 })
 
