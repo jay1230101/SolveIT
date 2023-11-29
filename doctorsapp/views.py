@@ -92,7 +92,7 @@ def register_patient():
         family = request.form.get('family')
         family = family.capitalize()
         dob = request.form.get('dob')
-        print("the dob is ",dob)
+        print("the dob is ", dob)
         gender = request.form.get('gender')
         phone = request.form.get('phone')
         email = request.form.get('email')
@@ -133,7 +133,7 @@ def book_appointment():
         family = family.capitalize()
         father = request.form.get('fathers')
         phone = request.form.get('phone')
-        freeText=request.form.get('free-text')
+        freeText = request.form.get('free-text')
         date = request.form.get('date')
         start_time = request.form.get('start-time')
 
@@ -159,23 +159,19 @@ def book_appointment():
         fullDoctorName = doctor_name + "" + doctor_family
 
         # get the dob of the patient and other params
-        dob_instance=patientRegistrationInfo.query.filter(
+        dob_instance = patientRegistrationInfo.query.filter(
             and_(
-                phone==phone,
-                name==name,
+                phone == phone,
+                name == name,
             )
         ).first()
-        dob_attr=dob_instance.dob.strftime("%Y-%m-%d")
+        dob_attr = dob_instance.dob.strftime("%Y-%m-%d")
         patient_dob_formated = datetime.strptime(dob_attr, "%Y-%m-%d").strftime("%d %B %Y")
-        session['dob']=patient_dob_formated
+        session['dob'] = patient_dob_formated
 
-
-
-        session['patientName']=name
-        session['familyName']=family
-        session['phone']=phone
-
-
+        session['patientName'] = name
+        session['familyName'] = family
+        session['phone'] = phone
 
         new_encounter = bookingEncounter(
             date=date,
@@ -213,8 +209,7 @@ def book_appointment():
             'phone': phone,
             'appointment': appointment_type,
             'treating_physician': fullDoctorName,
-            'free_text':freeText
-
+            'free_text': freeText
 
         }
         return jsonify(response)
@@ -349,7 +344,7 @@ def suggested_appointments():
                 'time1ISO': constructed_time1,
                 'date1': date1,
                 'time1': time1,
-                'message':'Your Message is Sent Successfully'
+                'message': 'Your Message is Sent Successfully'
             }
             return jsonify(response)
 
@@ -405,30 +400,72 @@ def suggested_appointments():
         elif (saveButton == 'save-form' and event_id_a and event_id_b and event_id_c):
             return saveReminderC()
 
-
-        if(sendPatientButton =='submit-patient' and event_id_a and not event_id_b and not event_id_c):
+        if (sendPatientButton == 'submit-patient' and event_id_a and not event_id_b and not event_id_c):
             return saveReminderA()
             # send an email to the patient
-        elif(sendPatientButton =='submit-patient' and event_id_a and event_id_b and not event_id_c):
+        elif (sendPatientButton == 'submit-patient' and event_id_a and event_id_b and not event_id_c):
             return saveReminderB()
             # send an email to the patient
-        elif (sendPatientButton=='submit-patient' and event_id_a and event_id_b and event_id_c):
+        elif (sendPatientButton == 'submit-patient' and event_id_a and event_id_b and event_id_c):
             return saveReminderC()
             # send an email to the patient
 
 
-
-
 @main.route('/emr', methods=['GET', 'POST'])
 def emr():
-    patient_dob=session.get('dob')
-    patient_name=session.get('patientName')
-    family_name=session.get('familyName')
-    phone=session.get('phone')
+    patient_dob = session.get('dob')
+    patient_name = session.get('patientName')
+    family_name = session.get('familyName')
+    phone = session.get('phone')
+    patient_id = request.args.get('patient_id')
 
-    return render_template("emr.html",dob=patient_dob,name=patient_name,family=family_name,phone=phone)
+
+    if request.method == 'POST':
+        data = request.json
+        medical_info=data.get('medicalInfo',{})
+        med_history=medical_info.get('med-history','')
+        physical_exam = medical_info.get('physical-exam','')
+        prescription = medical_info.get('prescription','')
+
+        charge_code = data.get('chargeCode',{})
+        charge_c = charge_code.get('charge_c',[])
+        description_c = charge_code.get('description_c',[])
+
+        patientN = charge_code.get('patientName','')
+        familyN = charge_code.get('famName','')
+
+        dob=charge_code.get('dob','')
+        patient_dob = datetime.strptime(dob, "%d %B %Y")
+        dob_formatted = patient_dob.strftime("%Y-%m-%d")
+        patientInfo = patientRegistrationInfo.query.filter(
+            and_(
+                patientRegistrationInfo.name == patientN,
+                patientRegistrationInfo.family == familyN,
+                patientRegistrationInfo.dob == dob_formatted
+
+            )
+        ).first()
+        patient_id = patientInfo.id
+        if patientInfo:
+            new_encounter=EMR_by_Encounter(
+                date=datetime.utcnow(),
+                past_medical_history=med_history,
+                patient_assessment=physical_exam,
+                prescription=prescription,
+                patient_id=patient_id,
+                orders_codes_placed=json.dumps(charge_c),
+                orders_descriptions_placed=json.dumps(description_c)
+            )
+            db.session.add(new_encounter)
+            db.session.commit()
 
 
+    return render_template("emr.html",
+                           dob=patient_dob,
+                           name=patient_name,
+                           family=family_name,
+                           phone=phone,
+                        )
 
 
 @main.route('/search_patient', methods=['GET', 'POST'])
@@ -437,6 +474,9 @@ def search_patient():
     matching_names = patientRegistrationInfo.query.filter(patientRegistrationInfo.name.ilike(f"%{query}")).all()
     results = []
     for patient in matching_names:
+        patient_dob = patient.dob.strftime("%Y-%m-%d")
+        patient_dob_formatted = datetime.strptime(patient_dob, "%Y-%m-%d").strftime("%d %B %Y")
+
         results.append({
             'id': patient.id,
             'name': patient.name,
@@ -444,6 +484,26 @@ def search_patient():
             'family': patient.family,
             'phone': patient.phone,
             'email': patient.email,
+            'dob': patient_dob_formatted
+        })
+    return jsonify(results)
+
+
+@main.route('/search_proc', methods=['GET', 'POST'])
+def search_proc():
+    query = request.args.get('query', '').lower()
+    matching_code = diagnostics.query.filter((diagnostics.code == query) | (diagnostics.description == query)).all()
+    results = []
+
+    for code in matching_code:
+        results.append({
+            'id': code.id,
+            'code': code.code,
+            'description': code.description,
+            'priceA': code.centerA,
+            'priceB': code.centerB,
+            'priceC': code.centerC,
+            'nssfReimb': code.NSSFrate,
         })
     return jsonify(results)
 
